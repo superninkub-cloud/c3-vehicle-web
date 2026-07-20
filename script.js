@@ -25,6 +25,11 @@ function initSupabase() {
     const key = localStorage.getItem(SUPABASE_ANON_KEY);
     
     if (url && key) {
+        if (typeof window.supabase === 'undefined') {
+            updateConnectionStatus(false);
+            console.error("Supabase CDN not loaded.");
+            return;
+        }
         // ใช้ Supabase จาก CDN (โหลดใน HTML แล้ว)
         supabase = window.supabase.createClient(url, key);
         updateConnectionStatus(true);
@@ -91,13 +96,20 @@ async function fetchMasterData() {
 }
 
 // --- UI Logic ---
-const Toast = Swal.mixin({
-    toast: true, position: 'top-end', showConfirmButton: false, timer: 3000,
-    timerProgressBar: true, didOpen: (toast) => {
-        toast.addEventListener('mouseenter', Swal.stopTimer)
-        toast.addEventListener('mouseleave', Swal.resumeTimer)
+let Toast = null;
+try {
+    if (typeof Swal !== 'undefined') {
+        Toast = Swal.mixin({
+            toast: true, position: 'top-end', showConfirmButton: false, timer: 3000,
+            timerProgressBar: true, didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer)
+                toast.addEventListener('mouseleave', Swal.resumeTimer)
+            }
+        });
     }
-});
+} catch (e) {
+    console.warn("SweetAlert not loaded.");
+}
 
 window.onload = () => {
     // โหลดตาราง
@@ -134,7 +146,14 @@ function switchView(viewId) {
     document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
     
     document.getElementById(viewId).classList.add('active');
-    event.currentTarget.classList.add('active');
+    
+    // Highlight the correct sidebar item based on viewId
+    const navItems = document.querySelectorAll('.nav-item');
+    if(viewId === 'dashboard') navItems[0].classList.add('active');
+    if(viewId === 'vehicle-form') navItems[1].classList.add('active');
+    if(viewId === 'crane-form') navItems[2].classList.add('active');
+    if(viewId === 'summary') navItems[3].classList.add('active');
+    if(viewId === 'settings') navItems[4].classList.add('active');
     
     let titleMap = {
         'dashboard': 'ภาพรวม (Dashboard)',

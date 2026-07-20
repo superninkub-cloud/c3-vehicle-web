@@ -20,8 +20,112 @@
     <!-- Supabase CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="style.css">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --primary-light: #dbeafe;
+            --success: #10b981;
+            --success-light: #d1fae5;
+            --danger: #ef4444;
+            --danger-light: #fee2e2;
+            --warning: #f59e0b;
+            --warning-light: #fef3c7;
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-card: 0 20px 40px -15px rgba(0,0,0,0.05);
+            --radius-md: 12px;
+            --radius-lg: 20px;
+            --radius-xl: 24px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Kanit', sans-serif; }
+        body { background-color: var(--bg-body); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; -webkit-font-smoothing: antialiased; }
+        .sidebar { width: 280px; background-color: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-right: 1px solid rgba(255,255,255,0.5); box-shadow: var(--shadow-card); display: flex; flex-direction: column; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); z-index: 1000; }
+        .sidebar-header { padding: 32px 24px 24px; display: flex; align-items: center; gap: 16px; }
+        .logo-icon { width: 48px; height: 48px; background: linear-gradient(135deg, var(--primary), #60a5fa); border-radius: 14px; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; box-shadow: 0 8px 16px rgba(37, 99, 235, 0.2); }
+        .logo-text { font-size: 18px; font-weight: 700; line-height: 1.2; color: var(--text-main); }
+        .logo-sub { font-size: 12px; font-weight: 400; color: var(--text-muted); }
+        .nav-menu { list-style: none; padding: 16px; flex-grow: 1; overflow-y: auto; }
+        .nav-item { padding: 14px 20px; margin-bottom: 8px; border-radius: var(--radius-md); cursor: pointer; display: flex; align-items: center; gap: 16px; color: var(--text-muted); font-weight: 500; font-size: 16px; transition: all 0.3s ease; }
+        .nav-item i { font-size: 20px; transition: transform 0.3s ease; }
+        .nav-item:hover { background-color: var(--bg-body); color: var(--primary); }
+        .nav-item:hover i { transform: scale(1.1); }
+        .nav-item.active { background-color: var(--primary-light); color: var(--primary); }
+        .main-content { flex-grow: 1; display: flex; flex-direction: column; height: 100vh; overflow: hidden; position: relative; }
+        .topbar { height: 80px; display: flex; align-items: center; justify-content: space-between; padding: 0 32px; background-color: rgba(248, 250, 252, 0.8); backdrop-filter: blur(10px); z-index: 10; }
+        .page-title { font-size: 24px; font-weight: 700; color: var(--text-main); margin: 0; letter-spacing: -0.5px; }
+        .user-profile { display: flex; align-items: center; gap: 12px; background: white; padding: 6px 16px 6px 6px; border-radius: 50px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); }
+        .content-area { padding: 0 32px 32px; overflow-y: auto; flex-grow: 1; scroll-behavior: smooth; }
+        .content-area::-webkit-scrollbar { width: 8px; }
+        .content-area::-webkit-scrollbar-track { background: transparent; }
+        .content-area::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .view-section { display: none; animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(20px); }
+        .view-section.active { display: block; }
+        @keyframes slideUpFade { to { opacity: 1; transform: translateY(0); } }
+        .glass-card { background: var(--bg-card); border-radius: var(--radius-xl); border: 1px solid rgba(255,255,255,0.7); box-shadow: var(--shadow-card); padding: 32px; margin-bottom: 24px; transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .glass-card:hover { transform: translateY(-2px); box-shadow: 0 25px 50px -12px rgba(0,0,0,0.08); }
+        .card-title-modern { font-size: 20px; font-weight: 600; margin-bottom: 24px; display: flex; align-items: center; gap: 12px; }
+        .icon-box { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+        .icon-box.primary { background: var(--primary-light); color: var(--primary); }
+        .icon-box.warning { background: var(--warning-light); color: var(--warning); }
+        .icon-box.danger { background: var(--danger-light); color: var(--danger); }
+        .icon-box.success { background: var(--success-light); color: var(--success); }
+        .form-label { font-size: 14px; font-weight: 500; color: var(--text-muted); margin-bottom: 8px; }
+        .form-control, .form-select { background-color: var(--bg-body); border: 1px solid transparent; border-radius: var(--radius-md); padding: 12px 16px; font-size: 15px; color: var(--text-main); transition: all 0.3s ease; box-shadow: inset 0 2px 4px 0 rgba(0,0,0,0.02); }
+        .form-control:focus, .form-select:focus { background-color: white; border-color: var(--primary); box-shadow: 0 0 0 4px var(--primary-light); outline: none; }
+        .table-modern { width: 100%; border-collapse: separate; border-spacing: 0 8px; }
+        .table-modern th { font-weight: 500; color: var(--text-muted); font-size: 14px; padding: 0 16px 8px; border: none; }
+        .table-modern td { background: white; padding: 16px; vertical-align: middle; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+        .table-modern td:first-child { border-left: 1px solid var(--border); border-radius: var(--radius-md) 0 0 var(--radius-md); font-weight: 500; }
+        .table-modern td:last-child { border-right: 1px solid var(--border); border-radius: 0 var(--radius-md) var(--radius-md) 0; }
+        .segmented-control { display: inline-flex; background-color: var(--bg-body); border-radius: 50px; padding: 4px; position: relative; }
+        .segmented-control input { display: none; }
+        .segmented-control label { padding: 6px 20px; font-size: 14px; font-weight: 500; color: var(--text-muted); cursor: pointer; border-radius: 50px; transition: all 0.3s ease; position: relative; z-index: 2; display: flex; align-items: center; gap: 6px; }
+        .segmented-control input[value="ปกติ"]:checked + label { background-color: var(--success); color: white; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3); }
+        .segmented-control input[value="แก้ไข"]:checked + label { background-color: var(--danger); color: white; box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3); }
+        .btn-modern { padding: 14px 28px; border-radius: 50px; font-weight: 600; font-size: 16px; transition: all 0.3s ease; border: none; display: inline-flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; }
+        .btn-primary-modern { background: linear-gradient(135deg, var(--primary), #3b82f6); color: white; box-shadow: 0 8px 16px rgba(37, 99, 235, 0.25); }
+        .btn-primary-modern:hover { transform: translateY(-2px); box-shadow: 0 12px 20px rgba(37, 99, 235, 0.35); }
+        .btn-warning-modern { background: linear-gradient(135deg, var(--warning), #fbbf24); color: #78350f; box-shadow: 0 8px 16px rgba(245, 158, 11, 0.25); }
+        .btn-warning-modern:hover { transform: translateY(-2px); box-shadow: 0 12px 20px rgba(245, 158, 11, 0.35); }
+        .btn-success-modern { background: linear-gradient(135deg, var(--success), #34d399); color: white; box-shadow: 0 8px 16px rgba(16, 185, 129, 0.25); }
+        .btn-modern:disabled { opacity: 0.7; cursor: not-allowed; transform: none; box-shadow: none; }
+        .status-container { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px 0; }
+        .progress-ring { position: relative; width: 160px; height: 160px; margin-bottom: 20px; }
+        .progress-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+        .progress-ring circle { fill: none; stroke-width: 12; stroke-linecap: round; }
+        .progress-ring .bg { stroke: var(--bg-body); }
+        .progress-ring .progress { stroke: var(--success); stroke-dasharray: 440; stroke-dashoffset: 440; transition: stroke-dashoffset 1.5s cubic-bezier(0.16, 1, 0.3, 1); }
+        .ring-content { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .ring-icon { font-size: 32px; color: var(--success); margin-bottom: 4px; }
+        .dash-list { list-style: none; padding: 0; }
+        .dash-item { padding: 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .dash-item:last-child { border-bottom: none; }
+        .mobile-toggle { display: none; font-size: 28px; cursor: pointer; color: var(--text-main); }
+        .mobile-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 999; opacity: 0; transition: opacity 0.3s ease; }
+        .mobile-overlay.show { opacity: 1; pointer-events: auto; }
+        @media (max-width: 992px) {
+            .sidebar { position: fixed; left: -280px; height: 100vh; }
+            .sidebar.show { left: 0; }
+            .mobile-toggle { display: block; }
+            .mobile-overlay { display: block; pointer-events: none; }
+            .topbar { padding: 0 20px; }
+            .content-area { padding: 0 16px 20px; }
+            .glass-card { padding: 24px 20px; }
+            .table-modern thead { display: none; }
+            .table-modern td { display: block; border: none; border-bottom: 1px solid var(--bg-body); padding: 12px; }
+            .table-modern td:first-child { border-radius: var(--radius-md) var(--radius-md) 0 0; background: var(--bg-body); }
+            .table-modern td:last-child { border-radius: 0 0 var(--radius-md) var(--radius-md); border-bottom: none; }
+            .table-modern tr { display: block; border: 1px solid var(--border); border-radius: var(--radius-md); margin-bottom: 16px; background: white; }
+            .segmented-control { width: 100%; display: flex; }
+            .segmented-control label { flex: 1; justify-content: center; }
+        }
+    </style>
 </head>
 <body>
 
@@ -291,7 +395,427 @@
         </div>
     </div>
 
-    <!-- App Scripts -->
-    <script src="script.js"></script>
+    <!-- INLINED JAVASCRIPT TO PREVENT FILE:/// CORS AND CACHE ISSUES -->
+    <script>
+        try {
+            // --- ข้อมูลพื้นฐานสำหรับแสดงผล ---
+            const vehicleChecklist = [
+                "ตรวจบันทึกประวัติต่างๆ", "แผนการบำรุงรักษา", "การต่อทะเบียน/ป้าย", "ความสะอาดห้องเครื่อง", 
+                "รอยรั่วน้ำมันต่างๆ", "สายพาน หม้อน้ำ พัดลม", "ระดับน้ำมันเครื่อง", "เกียร์", "ครัช", "เบรก", 
+                "แสงสว่าง", "สัญญาณแตร/ไฟเลี้ยว", "ไฟท้าย/เบรก", "แบตเตอรี่", "ปัดน้ำฝน", "เครื่องปรับอากาศ",
+                "ระยะฟรีพวงมาลัย", "การทำงานเบรคมือ", "ตัวถัง/สี", "กระบะบรรทุก", "เบาะนั่ง"
+            ];
+            
+            const craneChecklist = [
+                "ระบบคอนโทรล", "เกียร์ฝาก (PTO)", "ปั๊มไฮดรอลิค", "สายไฮดรอลิค", "น้ำมันไฮดรอลิค",
+                "กระบอกหมุนเครน", "เสาเครน/ลูกปืน", "กระบอกขาค้ำยัน", "กระบอกยกบูม", "กระบอกยืดหด",
+                "ชุดวิ้นซ์-เบรควิ้นซ์", "ลวดสลิง", "รอก", "หัวเจาะ", "ฮุก/เซฟตี้ล็อค", "ไฟสัญญาณเตือน"
+            ];
+            
+            let masterCars = [
+                { plate: "55-0774 กทม.", driver: "นายเสนาะ ดาวเรือง" },
+                { plate: "84-1643 นฐ", driver: "นายณัฐพล พืชพันธ์" },
+                { plate: "86-4715 นฐ(หัวลาก)", driver: "นายฉลองชัย ปานเรือง" },
+                { plate: "84-7657 นฐ (หาง)", driver: "นายฉลองชัย ปานเรือง" },
+                { plate: "90-7312 นฐ", driver: "นายขวัญเรือน มีถาวร" },
+                { plate: "90-2228 นฐ", driver: "นายศุภวิชญ์ เกาะลอย" },
+                { plate: "90-1845 นฐ", driver: "นายศุภวิชญ์ เกาะลอย" },
+                { plate: "90-7311 นฐ", driver: "นายอินทพร สร้อยสังวาลย์" },
+                { plate: "90-3515 นฐ", driver: "นายอนิวัติ จุลมูล" },
+                { plate: "90-2235 นฐ", driver: "นายกิตติภัฏ กาฬษร" },
+                { plate: "89-5769 นฐ", driver: "นายวีรพัฒน์ นาคลมัย" },
+                { plate: "85-3090 นฐ (หัว)", driver: "นายธวัชชัย โต๊ะศรีสุข" },
+                { plate: "85-3091 นฐ (หาง)", driver: "นายธวัชชัย โต๊ะศรีสุข" },
+                { plate: "90-2230 นฐ", driver: "นายวิสูตร เสือคล้าย" },
+                { plate: "90-2952 นฐ", driver: "นายศราวุฒิ เกิดสีเล็ก" },
+                { plate: "90-1844 นฐ", driver: "นายศราวุฒิ เกิดสีเล็ก" },
+                { plate: "90-0423 นฐ", driver: "นายโหนก แก้วบัวดี" },
+                { plate: "90-2951 นฐ", driver: "นายไพฑูรย์ สุขสมบัติ" },
+                { plate: "90-7310 นฐ", driver: "นายมานิตย์ ใจชื้น" },
+                { plate: "89-5774 นฐ", driver: "นายอุเทน นามศร" },
+                { plate: "84-9636 นฐ", driver: "นายอุเทน นามศร" },
+                { plate: "89-2131 นฐ", driver: "นายพงษ์พันธ์ จุติโรจนปกรณ์" },
+                { plate: "89-6967 นฐ", driver: "นายผดุงเกียรติ ศรีใส" },
+                { plate: "90-1842 นฐ", driver: "นายอุดมศักดิ์ จันทร์กลิ่น" }
+            ];
+            
+            let masterInspectors = [
+                "นายขวัญเรือน มีถาวร", "นายฉลองชัย ปานเรือง", "นายณัฐพล พืชพันธ์", 
+                "นายธวัชชัย โต๊ะศรีสุข", "นายพงษ์พันธ์ จุติโรจนปกรณ์", "นายผดุงเกียรติ ศรีใส", 
+                "นายไพฑูรย์ สุขสมบัติ", "นายมานิตย์ ใจชื้น", "นายศราวุฒิ เกิดสีเล็ก", 
+                "นายเสนาะ ดาวเรือง", "นายโหนก แก้วบัวดี", "นายอุดมศักดิ์ จันทร์กลิ่น", 
+                "นายอุเทน นามศร", "นายวิสูตร เสือคล้าย", "นายวีรพัฒน์ นาคลมัย", 
+                "นายศุภวิชญ์ เกาะลอย", "นายอนิวัติ จุลมูล", "นายอินทพร สร้อยสังวาลย์", 
+                "นายกิตติภัฏ กาฬษร"
+            ];
+            
+            // --- การตั้งค่า Supabase ---
+            let supabase = null;
+            const SUPABASE_URL_KEY = 'C3_SUPABASE_URL';
+            const SUPABASE_ANON_KEY = 'C3_SUPABASE_KEY';
+            
+            function initSupabase() {
+                const url = localStorage.getItem(SUPABASE_URL_KEY);
+                const key = localStorage.getItem(SUPABASE_ANON_KEY);
+                
+                if (url && key) {
+                    if (typeof window.supabase === 'undefined') {
+                        updateConnectionStatus(false);
+                        console.error("Supabase CDN not loaded.");
+                        populateDropdowns();
+                        loadDashboardOffline();
+                        return;
+                    }
+                    supabase = window.supabase.createClient(url, key);
+                    updateConnectionStatus(true);
+                    document.getElementById('supaUrl').value = url;
+                    document.getElementById('supaKey').value = key;
+                    fetchMasterData();
+                } else {
+                    updateConnectionStatus(false);
+                    populateDropdowns();
+                    loadDashboardOffline();
+                }
+            }
+            
+            function loadDashboardOffline() {
+                const issueBody = document.getElementById('dashIssueBody');
+                const missingList = document.getElementById('dashMissingList');
+                issueBody.innerHTML = `<tr><td colspan="3" class="text-center py-5"><h5 class="fw-bold text-dark">โหมดออฟไลน์</h5><p class="text-muted mb-0">กรุณาตั้งค่าฐานข้อมูลเพื่อดูรายงาน</p></td></tr>`;
+                
+                missingList.innerHTML = '';
+                masterCars.forEach(car => {
+                    missingList.innerHTML += `<div class="dash-item"><div class="d-flex flex-column"><span class="fw-bold text-dark">${car.plate}</span><span class="text-muted" style="font-size: 13px">${car.driver || 'ไม่ระบุคนขับ'}</span></div><span class="badge" style="background: var(--warning-light); color: var(--warning); padding: 6px 10px; border-radius: 6px;">รอตรวจ</span></div>`;
+                });
+                setProgressRing(0);
+            }
+            
+            function updateConnectionStatus(isConnected) {
+                const indicator = document.getElementById('statusIndicator');
+                const text = document.getElementById('statusText');
+                if (isConnected) {
+                    indicator.style.background = 'var(--success)';
+                    text.innerText = 'เชื่อมต่อฐานข้อมูล Supabase แล้ว (ออนไลน์)';
+                } else {
+                    indicator.style.background = 'var(--warning)';
+                    text.innerText = 'ทำงานแบบออฟไลน์ (โปรดไปที่เมนูตั้งค่าฐานข้อมูล)';
+                }
+            }
+            
+            function saveSupabaseSettings(e) {
+                e.preventDefault();
+                const url = document.getElementById('supaUrl').value.trim();
+                const key = document.getElementById('supaKey').value.trim();
+                localStorage.setItem(SUPABASE_URL_KEY, url);
+                localStorage.setItem(SUPABASE_ANON_KEY, key);
+                initSupabase();
+                if(Toast) {
+                    Toast.fire({
+                        icon: 'success',
+                        title: 'บันทึกการตั้งค่าสำเร็จ'
+                    }).then(() => switchView('dashboard'));
+                } else {
+                    alert('บันทึกสำเร็จ');
+                    switchView('dashboard');
+                }
+            }
+            
+            async function fetchMasterData() {
+                if (!supabase) return;
+                try {
+                    const { data: cars, error: err1 } = await supabase.from('vehicles').select('*');
+                    if (!err1 && cars && cars.length > 0) masterCars = cars.map(c => ({ plate: c.plate_number, driver: c.default_driver }));
+                    
+                    const { data: insp, error: err2 } = await supabase.from('inspectors').select('*');
+                    if (!err2 && insp && insp.length > 0) masterInspectors = insp.map(i => i.full_name);
+                    
+                    populateDropdowns();
+                    loadDashboard();
+                } catch (error) {
+                    console.error(error);
+                }
+            }
+            
+            let Toast = null;
+            try {
+                if (typeof Swal !== 'undefined') {
+                    Toast = Swal.mixin({
+                        toast: true, position: 'top-end', showConfirmButton: false, timer: 3000,
+                        timerProgressBar: true, didOpen: (toast) => {
+                            toast.addEventListener('mouseenter', Swal.stopTimer)
+                            toast.addEventListener('mouseleave', Swal.resumeTimer)
+                        }
+                    });
+                }
+            } catch (e) {}
+            
+            window.onload = () => {
+                renderChecklist('vehicleChecklistBody', vehicleChecklist, 'v');
+                renderChecklist('craneChecklistBody', craneChecklist, 'c');
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('vCheckDate').value = today;
+                document.getElementById('cCheckDate').value = today;
+                document.getElementById('dashDate').value = today;
+                setTimeout(() => setProgressRing(100), 500);
+                initSupabase();
+            };
+            
+            function populateDropdowns() {
+                let plateHtml = '<option value="">-- เลือกทะเบียน --</option>';
+                masterCars.forEach(car => plateHtml += `<option value="${car.plate}">${car.plate}</option>`);
+                plateHtml += '<option value="อื่นๆ">อื่นๆ</option>';
+                document.getElementById('vPlate').innerHTML = plateHtml;
+                document.getElementById('cPlate').innerHTML = plateHtml;
+            
+                let inspHtml = '<option value="">-- เลือกผู้ตรวจ --</option>';
+                masterInspectors.forEach(n => inspHtml += `<option value="${n}">${n}</option>`);
+                document.getElementById('vInspector').innerHTML = inspHtml;
+                document.getElementById('cInspector').innerHTML = inspHtml;
+            }
+            
+            window.switchView = function(viewId) {
+                try {
+                    document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+                    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+                    
+                    document.getElementById(viewId).classList.add('active');
+                    
+                    const navItems = document.querySelectorAll('.nav-item');
+                    if(viewId === 'dashboard') navItems[0].classList.add('active');
+                    if(viewId === 'vehicle-form') navItems[1].classList.add('active');
+                    if(viewId === 'crane-form') navItems[2].classList.add('active');
+                    if(viewId === 'summary') navItems[3].classList.add('active');
+                    if(viewId === 'settings') navItems[4].classList.add('active');
+                    
+                    let titleMap = {
+                        'dashboard': 'ภาพรวม (Dashboard)',
+                        'vehicle-form': 'ตรวจรถยนต์',
+                        'crane-form': 'ตรวจเครนไฮดรอลิค',
+                        'summary': 'สรุปส่งไลน์',
+                        'settings': 'ตั้งค่าระบบ'
+                    };
+                    document.getElementById('pageTitle').innerText = titleMap[viewId];
+                    
+                    if(window.innerWidth <= 992) toggleSidebar();
+                    if(viewId === 'summary') loadSummaryData();
+                    if(viewId === 'dashboard') {
+                        if(supabase) loadDashboard();
+                        else loadDashboardOffline();
+                    }
+                    
+                    document.getElementById('contentArea').scrollTo({ top: 0, behavior: 'smooth' });
+                } catch(e) {
+                    alert("Error in switchView: " + e.message);
+                }
+            };
+            
+            window.toggleSidebar = function() {
+                document.getElementById('sidebar').classList.toggle('show');
+                document.getElementById('mobileOverlay').classList.toggle('show');
+            };
+            
+            function renderChecklist(containerId, items, prefix) {
+                const tbody = document.getElementById(containerId);
+                let html = '';
+                items.forEach((item, i) => {
+                    let idx = i + 1;
+                    html += `<tr>
+                            <td><div class="fw-medium text-dark">${idx}. ${item}</div></td>
+                            <td class="text-center">
+                                <div class="segmented-control">
+                                    <input type="radio" name="status_${idx}" id="${prefix}_ok_${idx}" value="ปกติ" checked>
+                                    <label for="${prefix}_ok_${idx}"><i class="ph ph-check"></i> ปกติ</label>
+                                    <input type="radio" name="status_${idx}" id="${prefix}_fix_${idx}" value="แก้ไข">
+                                    <label for="${prefix}_fix_${idx}"><i class="ph ph-wrench"></i> แก้ไข</label>
+                                </div>
+                            </td>
+                            <td><input type="text" class="form-control" name="defect_${idx}" placeholder="ระบุอาการ..." style="background: white;"></td>
+                        </tr>`;
+                });
+                tbody.innerHTML = html;
+            }
+            
+            window.submitForm = async function(e, carType) {
+                e.preventDefault();
+                if (!supabase) {
+                    alert('คุณกำลังใช้งานโหมดออฟไลน์: ไม่สามารถบันทึกข้อมูลได้ กรุณาไปที่เมนูตั้งค่าและใส่ข้อมูล Supabase ก่อน');
+                    return;
+                }
+                const formId = carType === 'รถยนต์' ? 'vehicleChecklistForm' : 'craneChecklistForm';
+                const btnId = carType === 'รถยนต์' ? 'btnSubmitVehicle' : 'btnSubmitCrane';
+                const btn = document.getElementById(btnId);
+                const originalText = btn.innerHTML;
+                
+                btn.disabled = true;
+                btn.innerHTML = 'กำลังบันทึกข้อมูล...';
+                
+                const formData = new FormData(document.getElementById(formId));
+                const dataObj = Object.fromEntries(formData.entries());
+                
+                let issues = [];
+                let isDefective = false;
+                for (let key in dataObj) {
+                    if (key.startsWith("status_") && dataObj[key] === "แก้ไข") {
+                        const index = key.split("_")[1];
+                        const defect = dataObj["defect_" + index] || "ไม่ระบุอาการ";
+                        issues.push(`ข้อ ${index}: ${defect}`);
+                        isDefective = true;
+                    }
+                }
+            
+                const payload = {
+                    check_date: dataObj.checkDate,
+                    plate_number: dataObj.licensePlate,
+                    car_type: carType,
+                    inspector_name: dataObj.inspectorName,
+                    is_defective: isDefective,
+                    issues_list: issues.join(", "),
+                    raw_json: dataObj
+                };
+            
+                try {
+                    const { error } = await supabase.from('inspections').insert([payload]);
+                    if (error) throw error;
+                    if(Toast) Toast.fire({ icon: 'success', title: 'บันทึกสำเร็จ!' });
+                    else alert('บันทึกสำเร็จ!');
+                    document.getElementById(formId).reset();
+                    const today = new Date().toISOString().split('T')[0];
+                    document.getElementById(carType === 'รถยนต์' ? 'vCheckDate' : 'cCheckDate').value = today;
+                } catch (err) {
+                    alert('เกิดข้อผิดพลาด: ' + err.message);
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                }
+            };
+            
+            function setProgressRing(percent) {
+                const circle = document.getElementById('dashProgress');
+                if(!circle) return;
+                const offset = 440 - (percent / 100) * 440;
+                circle.style.strokeDashoffset = offset;
+                
+                const icon = document.querySelector('.ring-icon');
+                if(!icon) return;
+                if (percent === 100) {
+                    circle.style.stroke = 'var(--success)';
+                    icon.className = 'ph-fill ph-check-circle ring-icon';
+                    icon.style.color = 'var(--success)';
+                } else if (percent > 50) {
+                    circle.style.stroke = 'var(--warning)';
+                    icon.className = 'ph-fill ph-warning-circle ring-icon';
+                    icon.style.color = 'var(--warning)';
+                } else {
+                    circle.style.stroke = 'var(--danger)';
+                    icon.className = 'ph-fill ph-x-circle ring-icon';
+                    icon.style.color = 'var(--danger)';
+                }
+            }
+            
+            window.loadDashboard = async function() {
+                if (!supabase) return;
+                const dateVal = document.getElementById('dashDate').value;
+                const issueBody = document.getElementById('dashIssueBody');
+                const missingList = document.getElementById('dashMissingList');
+                
+                issueBody.innerHTML = '<tr><td colspan="3" class="text-center py-4">กำลังโหลด...</td></tr>';
+                missingList.innerHTML = '<div class="text-center py-4">กำลังโหลด...</div>';
+                
+                try {
+                    const { data: records, error } = await supabase.from('inspections').select('*').eq('check_date', dateVal);
+                    if (error) throw error;
+                    
+                    issueBody.innerHTML = ''; missingList.innerHTML = '';
+                    let inspectedPlates = [];
+                    records.forEach(record => {
+                        inspectedPlates.push(record.plate_number);
+                        if(record.is_defective) {
+                            issueBody.innerHTML += `<tr><td><div class="fw-bold text-danger d-flex align-items-center gap-2"><div style="width: 8px; height: 8px; border-radius: 50%; background: var(--danger);"></div>${record.plate_number}</div></td><td>${record.inspector_name}</td><td class="text-muted">${record.issues_list}</td></tr>`;
+                        }
+                    });
+            
+                    let missingCount = 0;
+                    masterCars.forEach(car => {
+                        if(!inspectedPlates.includes(car.plate)) {
+                            missingCount++;
+                            missingList.innerHTML += `<div class="dash-item"><div class="d-flex flex-column"><span class="fw-bold text-dark">${car.plate}</span><span class="text-muted" style="font-size: 13px">${car.driver || 'ไม่ระบุคนขับ'}</span></div><span class="badge" style="background: var(--warning-light); color: var(--warning); padding: 6px 10px; border-radius: 6px;">รอตรวจ</span></div>`;
+                        }
+                    });
+            
+                    const totalCars = masterCars.length || 1;
+                    const inspectedCount = masterCars.length - missingCount;
+                    const percent = Math.round((inspectedCount / totalCars) * 100);
+                    setProgressRing(percent);
+            
+                    if(issueBody.innerHTML === '') {
+                        issueBody.innerHTML = `<tr><td colspan="3" class="text-center py-5"><h5 class="fw-bold text-dark">ปกติทุกคัน!</h5><p class="text-muted mb-0">ไม่มีรายงานรถชำรุดในวันนี้</p></td></tr>`;
+                    }
+                    if(missingList.innerHTML === '') {
+                        missingList.innerHTML = `<div class="text-center py-5"><h5 class="fw-bold text-dark">ตรวจครบ 100%</h5><p class="text-muted mb-0">ยอดเยี่ยมมาก!</p></div>`;
+                    }
+                } catch (err) {
+                    console.error(err);
+                }
+            };
+            
+            let recentRecords = [];
+            window.loadSummaryData = async function() {
+                if (!supabase) return;
+                document.getElementById('recordSelect').innerHTML = '<option value="">-- กำลังดึงข้อมูลล่าสุด... --</option>';
+                try {
+                    const { data, error } = await supabase.from('inspections').select('*').order('created_at', { ascending: false }).limit(30);
+                    if (error) throw error;
+                    recentRecords = data;
+                    let html = '<option value="">-- เลือกรถที่เพิ่งตรวจล่าสุด --</option>';
+                    data.forEach((r, i) => {
+                        let d = new Date(r.check_date);
+                        html += `<option value="${i}">🚗 ${r.plate_number} (ตรวจ ${d.getDate()}/${d.getMonth()+1} - ${r.inspector_name})</option>`;
+                    });
+                    document.getElementById('recordSelect').innerHTML = html;
+                } catch (err) {
+                    console.error(err);
+                }
+            };
+            
+            window.generateText = function() {
+                const index = document.getElementById('recordSelect').value;
+                if (!index) return document.getElementById('outputText').value = "";
+                const r = recentRecords[index];
+                let d = new Date(r.check_date);
+                let thaiMonths = ["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."];
+                document.getElementById('outputText').value = `วันที่ ${d.getDate()} ${thaiMonths[d.getMonth()]} ${d.getFullYear()+543}
+ผกร.กรย.กฟก.3 ตรวจสอบยานพาหนะ
+ทะเบียน ${r.plate_number} ก่อนออกปฏิบัติงาน 
+เพื่อความปลอดภัย ได้ดำเนินการตรวจสอบ ดังนี้
+
+✅ ระดับน้ำมันเครื่อง       ผลปกติ
+✅ ระดับน้ำหล่อเย็น         ผลปกติ
+✅ ระบบน้ำมันเกียร์         ผลปกติ
+✅ ระดับน้ำมันหล่อลื่น      ผลปกติ
+✅ สภาพยาง                  ผลปกติ
+✅ แบตเตอรี่                  ผลปกติ
+✅ ระบบไฟต่างๆ             ผลปกติ
+✅ ถังดับเพลิง                ผลปกติ
+
+โดย ${r.inspector_name}
+(พขร.บ.) ผู้ตรวจสอบ`;
+            };
+            
+            window.copyToClipboard = function() {
+                const txt = document.getElementById("outputText");
+                if(!txt.value) {
+                    alert('กรุณาเลือกรถจาก Dropdown ก่อนคัดลอกครับ');
+                    return;
+                }
+                txt.select();
+                navigator.clipboard.writeText(txt.value).then(() => {
+                    if(Toast) Toast.fire({ icon: 'success', title: 'คัดลอกสำเร็จ!' });
+                    else alert('คัดลอกสำเร็จ!');
+                });
+            };
+        } catch (globalErr) {
+            alert("Global Error: " + globalErr.message);
+        }
+    </script>
 </body>
 </html>
