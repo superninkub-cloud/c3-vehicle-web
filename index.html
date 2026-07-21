@@ -154,6 +154,9 @@
             <li class="nav-item" onclick="switchView('summary')">
                 <i class="ph ph-line-logo"></i> สรุปส่งไลน์
             </li>
+            <li class="nav-item" onclick="switchView('regulations')">
+                <i class="ph ph-book-open-text"></i> ระเบียบปฏิบัติ
+            </li>
             <li class="nav-item" onclick="switchView('settings')" style="margin-top: 20px;">
                 <i class="ph ph-gear"></i> ตั้งค่าฐานข้อมูล
             </li>
@@ -286,7 +289,15 @@
                             </table>
                         </div>
                         
-                        <div class="text-center mt-5">
+                        <div class="mb-4 p-3 rounded" style="background-color: var(--primary-light); border-left: 4px solid var(--primary);">
+                            <div class="form-check d-flex align-items-center">
+                                <input class="form-check-input" type="checkbox" id="vAcknowledge" required style="width: 20px; height: 20px; border-color: var(--primary); flex-shrink: 0;">
+                                <label class="form-check-label ms-3" for="vAcknowledge" style="font-size: 15px; color: var(--text-main); font-weight: 500;">
+                                    ข้าพเจ้าได้ตรวจสอบสภาพรถและมีใบอนุญาตขับขี่ถูกต้องตาม <a href="#" onclick="switchView('regulations')" class="text-primary fw-bold text-decoration-none">ระเบียบ กฟภ. พ.ศ. 2565</a>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="text-center mt-3">
                             <button type="submit" class="btn-modern btn-primary-modern w-100" style="max-width: 400px;" id="btnSubmitVehicle">
                                 <i class="ph ph-paper-plane-tilt fs-5"></i> บันทึกลงฐานข้อมูล
                             </button>
@@ -332,7 +343,15 @@
                             </table>
                         </div>
                         
-                        <div class="text-center mt-5">
+                        <div class="mb-4 p-3 rounded" style="background-color: var(--warning-light); border-left: 4px solid var(--warning);">
+                            <div class="form-check d-flex align-items-center">
+                                <input class="form-check-input" type="checkbox" id="cAcknowledge" required style="width: 20px; height: 20px; border-color: var(--warning); flex-shrink: 0;">
+                                <label class="form-check-label ms-3" for="cAcknowledge" style="font-size: 15px; color: var(--text-main); font-weight: 500;">
+                                    ข้าพเจ้าได้ตรวจสอบสภาพเครนและมีใบอนุญาตขับขี่ถูกต้องตาม <a href="#" onclick="switchView('regulations')" class="text-primary fw-bold text-decoration-none">ระเบียบ กฟภ. พ.ศ. 2565</a>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="text-center mt-3">
                             <button type="submit" class="btn-modern btn-warning-modern w-100" style="max-width: 400px;" id="btnSubmitCrane">
                                 <i class="ph ph-paper-plane-tilt fs-5"></i> บันทึกลงฐานข้อมูล
                             </button>
@@ -366,6 +385,77 @@
                 </div>
             </div>
             
+            <!-- ================= Regulations View ================= -->
+            <div id="regulations" class="view-section">
+                <div class="row g-4">
+                    <div class="col-xl-6">
+                        <div class="glass-card h-100" style="border-top: 4px solid var(--success);">
+                            <div class="card-title-modern">
+                                <div class="icon-box success"><i class="ph ph-check-circle"></i></div>
+                                <span class="text-success">สิ่งที่ต้องปฏิบัติ (Do's)</span>
+                            </div>
+                            <ul class="list-group list-group-flush bg-transparent" style="list-style: none; padding: 0;">
+                                <li class="mb-3">
+                                    <div class="fw-bold text-dark d-flex align-items-center"><i class="ph ph-identification-card fs-4 text-primary me-2"></i>การขับขี่</div>
+                                    <div class="text-muted ms-4">ต้องมีใบอนุญาตขับขี่ตรงตามประเภทรถ, ปฏิบัติตามกฎจราจรและป้ายเตือนอย่างเคร่งครัด</div>
+                                </li>
+                                <li class="mb-3">
+                                    <div class="fw-bold text-dark d-flex align-items-center"><i class="ph ph-magnifying-glass fs-4 text-primary me-2"></i>ก่อนการใช้งาน</div>
+                                    <div class="text-muted ms-4">ต้องตรวจสอบสภาพรถก่อนและหลังใช้งานทุกครั้ง หากพบชำรุดต้องรายงานทันที</div>
+                                </li>
+                                <li class="mb-3">
+                                    <div class="fw-bold text-dark d-flex align-items-center"><i class="ph ph-parking fs-4 text-primary me-2"></i>การจอดรถ</div>
+                                    <div class="text-muted ms-4">ต้องดับเครื่องยนต์ ปลดเกียร์ว่าง ดึงเบรกมือ (ถ้ารถจอดบนทางลาดชันต้องใช้ไม้หมอนหนุนล้อ)</div>
+                                </li>
+                                <li class="mb-3">
+                                    <div class="fw-bold text-dark d-flex align-items-center"><i class="ph ph-package fs-4 text-primary me-2"></i>การบรรทุก</div>
+                                    <div class="text-muted ms-4">ต้องใช้รัดเต๊าะหรือเชือกรัดให้แน่นหนา หากมีสิ่งของยื่นเกินตัวรถต้องติดธงสีแดง (กลางวัน) หรือไฟสีแดง (กลางคืน)</div>
+                                </li>
+                                <li class="mb-3">
+                                    <div class="fw-bold text-dark d-flex align-items-center"><i class="ph ph-warning-octagon fs-4 text-primary me-2"></i>เมื่อเกิดอุบัติเหตุ</div>
+                                    <div class="text-muted ms-4">ต้องแจ้งตำรวจ, ถ่ายภาพเป็นหลักฐาน, และรายงานผู้บังคับบัญชาทันที</div>
+                                </li>
+                                <li class="mb-3">
+                                    <div class="fw-bold text-dark d-flex align-items-center"><i class="ph ph-waves fs-4 text-primary me-2"></i>การขับลุยน้ำ</div>
+                                    <div class="text-muted ms-4">ให้ปิดแอร์ก่อนลุยน้ำ เมื่อผ่านจุดที่น้ำท่วมแล้วให้ทดสอบเบรกและตรวจเช็คของเหลว</div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="col-xl-6">
+                        <div class="glass-card h-100" style="border-top: 4px solid var(--danger);">
+                            <div class="card-title-modern">
+                                <div class="icon-box danger"><i class="ph ph-x-circle"></i></div>
+                                <span class="text-danger">สิ่งที่ห้ามทำ (Don'ts)</span>
+                            </div>
+                            <ul class="list-group list-group-flush bg-transparent" style="list-style: none; padding: 0;">
+                                <li class="mb-3">
+                                    <div class="fw-bold text-dark d-flex align-items-center"><i class="ph ph-users fs-4 text-danger me-2"></i>ห้ามบุคคลภายนอก</div>
+                                    <div class="text-muted ms-4">ห้ามให้บุคคลภายนอกที่ไม่ได้รับอนุญาต หรือพนักงานที่ไม่มีหน้าที่ ขึ้นขับขี่หรือโดยสารยานพาหนะของ กฟภ. เด็ดขาด</div>
+                                </li>
+                                <li class="mb-3">
+                                    <div class="fw-bold text-dark d-flex align-items-center"><i class="ph ph-key fs-4 text-danger me-2"></i>ห้ามทิ้งกุญแจ</div>
+                                    <div class="text-muted ms-4">ห้ามทิ้งกุญแจไว้ที่ยานพาหนะเมื่อจอดรถทิ้งไว้</div>
+                                </li>
+                                <li class="mb-3">
+                                    <div class="fw-bold text-dark d-flex align-items-center"><i class="ph ph-scales fs-4 text-danger me-2"></i>ห้ามบรรทุกเกินพิกัด</div>
+                                    <div class="text-muted ms-4">ห้ามบรรทุกน้ำหนักเกินพิกัดที่กำหนด</div>
+                                </li>
+                                <li class="mb-3">
+                                    <div class="fw-bold text-dark d-flex align-items-center"><i class="ph ph-arrow-line-up fs-4 text-danger me-2"></i>ห้ามบรรทุกสูงเกิน</div>
+                                    <div class="text-muted ms-4">ห้ามบรรทุกสิ่งของสูงเกิน 3.00 เมตรจากพื้นทาง (หรือเกิน 3.80 เมตรสำหรับรถบรรทุกกว้าง 2.30 เมตรขึ้นไป)</div>
+                                </li>
+                                <li class="mb-3">
+                                    <div class="fw-bold text-dark d-flex align-items-center"><i class="ph ph-wrench fs-4 text-danger me-2"></i>ห้ามดัดแปลงรถ</div>
+                                    <div class="text-muted ms-4">ห้ามดัดแปลงสภาพรถ หรือแก้ไขหมายเลขรหัสประจำรถโดยไม่ได้รับอนุญาต</div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- ================= Settings View ================= -->
             <div id="settings" class="view-section">
                 <div class="glass-card">
@@ -580,18 +670,18 @@
                     
                     document.getElementById(viewId).classList.add('active');
                     
-                    const navItems = document.querySelectorAll('.nav-item');
-                    if(viewId === 'dashboard') navItems[0].classList.add('active');
-                    if(viewId === 'vehicle-form') navItems[1].classList.add('active');
-                    if(viewId === 'crane-form') navItems[2].classList.add('active');
-                    if(viewId === 'summary') navItems[3].classList.add('active');
-                    if(viewId === 'settings') navItems[4].classList.add('active');
+                    document.querySelectorAll('.nav-item').forEach(el => {
+                        if(el.getAttribute('onclick') && el.getAttribute('onclick').includes(viewId)) {
+                            el.classList.add('active');
+                        }
+                    });
                     
                     let titleMap = {
                         'dashboard': 'ภาพรวม (Dashboard)',
                         'vehicle-form': 'ตรวจรถยนต์',
                         'crane-form': 'ตรวจเครนไฮดรอลิค',
                         'summary': 'สรุปส่งไลน์',
+                        'regulations': 'ระเบียบปฏิบัติ พ.ศ. 2565',
                         'settings': 'ตั้งค่าระบบ'
                     };
                     document.getElementById('pageTitle').innerText = titleMap[viewId];
