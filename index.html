@@ -262,17 +262,24 @@
                     
                     <form id="vehicleChecklistForm" onsubmit="submitForm(event, 'รถยนต์')">
                         <div class="row g-4 mb-5">
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <label class="form-label">ทะเบียนรถ</label>
                                 <select class="form-select" name="licensePlate" id="vPlate" required></select>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <label class="form-label">ผู้ตรวจสอบ</label>
                                 <select class="form-select" name="inspectorName" id="vInspector" required></select>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <label class="form-label">วันที่ตรวจสอบ</label>
                                 <input type="date" class="form-control" name="checkDate" id="vCheckDate" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">สภาพการใช้งาน</label>
+                                <select class="form-select" name="usageCondition" required>
+                                    <option value="พร้อมใช้งาน">พร้อมใช้งาน</option>
+                                    <option value="อยู่ระหว่างเข้าซ่อม">อยู่ระหว่างเข้าซ่อม</option>
+                                </select>
                             </div>
                         </div>
 
@@ -316,17 +323,24 @@
                     
                     <form id="craneChecklistForm" onsubmit="submitForm(event, 'เครนไฮดรอลิค')">
                         <div class="row g-4 mb-5">
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <label class="form-label">ทะเบียนรถเครน</label>
                                 <select class="form-select" name="licensePlate" id="cPlate" required></select>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <label class="form-label">ผู้ตรวจสอบ</label>
                                 <select class="form-select" name="inspectorName" id="cInspector" required></select>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <label class="form-label">วันที่ตรวจสอบ</label>
                                 <input type="date" class="form-control" name="checkDate" id="cCheckDate" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">สภาพการใช้งาน</label>
+                                <select class="form-select" name="usageCondition" required>
+                                    <option value="พร้อมใช้งาน">พร้อมใช้งาน</option>
+                                    <option value="อยู่ระหว่างเข้าซ่อม">อยู่ระหว่างเข้าซ่อม</option>
+                                </select>
                             </div>
                         </div>
 
@@ -744,6 +758,11 @@
                 
                 let issues = [];
                 let isDefective = false;
+                if (dataObj.usageCondition === "อยู่ระหว่างเข้าซ่อม") {
+                    isDefective = true;
+                    issues.push("อยู่ระหว่างเข้าซ่อม");
+                }
+                
                 for (let key in dataObj) {
                     if (key.startsWith("status_") && dataObj[key] === "แก้ไข") {
                         const index = key.split("_")[1];
@@ -877,6 +896,8 @@
 ผกร.กรย.กฟก.3 ตรวจสอบยานพาหนะ
 ทะเบียน ${r.plate_number} ก่อนออกปฏิบัติงาน 
 เพื่อความปลอดภัย ได้ดำเนินการตรวจสอบ ดังนี้
+
+📌 สภาพการใช้งาน: ${r.raw_json && r.raw_json.usageCondition ? r.raw_json.usageCondition : 'พร้อมใช้งาน'}
 
 ✅ ระดับน้ำมันเครื่อง       ผลปกติ
 ✅ ระดับน้ำหล่อเย็น         ผลปกติ
