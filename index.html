@@ -206,13 +206,18 @@
                                             <div class="fw-bold" style="font-size: 20px; color: var(--text-main);">พร้อมใช้งาน</div>
                                         </div>
                                     </div>
-                                    <h3 class="fw-bold mb-2">สถานะยานพาหนะประจำวัน</h3>
-                                    <p class="text-muted mb-4">ข้อมูลอัปเดตล่าสุดของวันนี้</p>
+                                    <h3 class="fw-bold mb-2">สถานะยานพาหนะ</h3>
+                                    <p class="text-muted mb-4" id="dashTitleText">ข้อมูลอัปเดตล่าสุดของวันนี้</p>
                                     
                                     <div class="d-flex justify-content-center gap-2 flex-wrap">
-                                        <input type="date" id="dashDate" class="form-control" style="max-width: 200px;">
+                                        <select id="dashMode" class="form-select" style="max-width: 120px;" onchange="toggleDashMode()">
+                                            <option value="daily">รายวัน</option>
+                                            <option value="monthly">รายเดือน</option>
+                                        </select>
+                                        <input type="date" id="dashDate" class="form-control" style="max-width: 150px;">
+                                        <input type="month" id="dashMonth" class="form-control d-none" style="max-width: 150px;">
                                         <button class="btn-modern btn-primary-modern" onclick="loadDashboard()">
-                                            <i class="ph ph-arrows-clockwise"></i> อัปเดตข้อมูล
+                                            <i class="ph ph-arrows-clockwise"></i> อัปเดต
                                         </button>
                                     </div>
                                 </div>
@@ -222,7 +227,7 @@
                         <div class="glass-card">
                             <div class="card-title-modern">
                                 <div class="icon-box primary"><i class="ph ph-list-checks"></i></div>
-                                <span class="text-primary">รายการรถที่ตรวจสอบแล้ววันนี้</span>
+                                <span class="text-primary" id="dashInspectedTitle">รายการรถที่ตรวจสอบแล้ววันนี้</span>
                             </div>
                             <div class="table-responsive">
                                 <table class="table-modern w-100">
@@ -239,7 +244,7 @@
                         <div class="glass-card h-100">
                             <div class="card-title-modern">
                                 <div class="icon-box warning"><i class="ph ph-clock-counter-clockwise"></i></div>
-                                <span>ยังไม่ส่งตรวจวันนี้</span>
+                                <span id="dashMissingTitle">ยังไม่ส่งตรวจวันนี้</span>
                             </div>
                             <div class="dash-list" id="dashMissingList">
                                 <div class="text-center text-muted py-4">รอโหลดข้อมูล...</div>
@@ -797,9 +802,24 @@
                 }
             }
             
+            window.toggleDashMode = function() {
+                const mode = document.getElementById('dashMode').value;
+                if (mode === 'daily') {
+                    document.getElementById('dashDate').classList.remove('d-none');
+                    document.getElementById('dashMonth').classList.add('d-none');
+                } else {
+                    document.getElementById('dashDate').classList.add('d-none');
+                    document.getElementById('dashMonth').classList.remove('d-none');
+                }
+                loadDashboard();
+            }
+
             window.loadDashboard = async function() {
                 if (!supabase) return;
+                const mode = document.getElementById('dashMode') ? document.getElementById('dashMode').value : 'daily';
                 const dateVal = document.getElementById('dashDate').value;
+                const monthVal = document.getElementById('dashMonth') ? document.getElementById('dashMonth').value : '';
+                
                 const issueBody = document.getElementById('dashIssueBody');
                 const missingList = document.getElementById('dashMissingList');
                 
@@ -807,7 +827,22 @@
                 missingList.innerHTML = '<div class="text-center py-4">กำลังโหลด...</div>';
                 
                 try {
-                    const { data: records, error } = await supabase.from('inspections').select('*').eq('check_date', dateVal).order('created_at', { ascending: false });
+                    let query = supabase.from('inspections').select('*');
+                    
+                    if (mode === 'daily') {
+                        query = query.eq('check_date', dateVal);
+                        if(document.getElementById('dashTitleText')) document.getElementById('dashTitleText').innerText = 'ข้อมูลอัปเดตล่าสุดของวันนี้';
+                        if(document.getElementById('dashInspectedTitle')) document.getElementById('dashInspectedTitle').innerText = 'รายการรถที่ตรวจสอบแล้ววันนี้';
+                        if(document.getElementById('dashMissingTitle')) document.getElementById('dashMissingTitle').innerText = 'ยังไม่ส่งตรวจวันนี้';
+                    } else {
+                        const [year, month] = monthVal.split('-');
+                        query = query.gte('check_date', `${year}-${month}-01`).lte('check_date', `${year}-${month}-31`);
+                        if(document.getElementById('dashTitleText')) document.getElementById('dashTitleText').innerText = `ข้อมูลอัปเดตล่าสุดของเดือน ${month}/${year}`;
+                        if(document.getElementById('dashInspectedTitle')) document.getElementById('dashInspectedTitle').innerText = 'รายการรถที่ตรวจสอบแล้วเดือนนี้';
+                        if(document.getElementById('dashMissingTitle')) document.getElementById('dashMissingTitle').innerText = 'ยังไม่ส่งตรวจเดือนนี้';
+                    }
+                    
+                    const { data: records, error } = await query.order('created_at', { ascending: false });
                     if (error) throw error;
                     
                     issueBody.innerHTML = ''; missingList.innerHTML = '';
@@ -892,9 +927,17 @@
                 try {
                     const { data, error } = await supabase.from('inspections').select('*').order('created_at', { ascending: false }).limit(30);
                     if (error) throw error;
-                    recentRecords = data;
                     let html = '<option value="">-- เลือกรถที่เพิ่งตรวจล่าสุด --</option>';
-                    data.forEach((r, i) => {
+                    let seenPlates = new Set();
+                    let deduplicatedRecords = [];
+                    data.forEach(r => {
+                        if (!seenPlates.has(r.plate_number)) {
+                            seenPlates.add(r.plate_number);
+                            deduplicatedRecords.push(r);
+                        }
+                    });
+                    recentRecords = deduplicatedRecords;
+                    deduplicatedRecords.forEach((r, i) => {
                         let d = new Date(r.check_date);
                         html += `<option value="${i}">🚗 ${r.plate_number} (ตรวจ ${d.getDate()}/${d.getMonth()+1} - ${r.inspector_name})</option>`;
                     });
