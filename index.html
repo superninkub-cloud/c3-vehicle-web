@@ -226,7 +226,7 @@
                             </div>
                             <div class="table-responsive">
                                 <table class="table-modern w-100">
-                                    <thead><tr><th>ทะเบียนรถ</th><th>ประเภท</th><th>ผู้ตรวจสอบ</th><th>สถานะ</th></tr></thead>
+                                    <thead><tr><th>ทะเบียนรถ</th><th>สถานะตัวรถ</th><th>สถานะเครน</th><th>ผู้ตรวจสอบล่าสุด</th></tr></thead>
                                     <tbody id="dashIssueBody">
                                         <tr><td colspan="4" class="text-center text-muted py-4">รอโหลดข้อมูล...</td></tr>
                                     </tbody>
@@ -276,6 +276,7 @@
                                 <select class="form-select" name="usageCondition" required>
                                     <option value="พร้อมใช้งาน">พร้อมใช้งาน</option>
                                     <option value="อยู่ระหว่างเข้าซ่อม">อยู่ระหว่างเข้าซ่อม</option>
+                                    <option value="ไม่ได้ใช้งาน">ไม่ได้ใช้งาน</option>
                                 </select>
                             </div>
                         </div>
@@ -337,6 +338,7 @@
                                 <select class="form-select" name="usageCondition" required>
                                     <option value="พร้อมใช้งาน">พร้อมใช้งาน</option>
                                     <option value="อยู่ระหว่างเข้าซ่อม">อยู่ระหว่างเข้าซ่อม</option>
+                                    <option value="ไม่ได้ใช้งาน">ไม่ได้ใช้งาน</option>
                                 </select>
                             </div>
                         </div>
@@ -805,21 +807,58 @@
                 missingList.innerHTML = '<div class="text-center py-4">กำลังโหลด...</div>';
                 
                 try {
-                    const { data: records, error } = await supabase.from('inspections').select('*').eq('check_date', dateVal);
+                    const { data: records, error } = await supabase.from('inspections').select('*').eq('check_date', dateVal).order('created_at', { ascending: false });
                     if (error) throw error;
                     
                     issueBody.innerHTML = ''; missingList.innerHTML = '';
                     let inspectedPlates = [];
+                    let platesMap = {};
+                    
                     records.forEach(record => {
-                        inspectedPlates.push(record.plate_number);
-                        const carType = record.car_type || 'รถยนต์';
-                        const carIcon = carType === 'รถยนต์' ? '<i class="ph ph-car text-primary fs-5"></i>' : '<i class="ph ph-truck text-warning fs-5"></i>';
-                        
-                        if(record.is_defective) {
-                            issueBody.innerHTML += `<tr><td><div class="fw-bold text-dark d-flex align-items-center gap-2">${carIcon} ${record.plate_number}</div></td><td>${carType}</td><td>${record.inspector_name}</td><td><span class="badge" style="background: var(--danger-light); color: var(--danger); padding: 6px 10px; border-radius: 6px;">พบปัญหา: ${record.issues_list}</span></td></tr>`;
-                        } else {
-                            issueBody.innerHTML += `<tr><td><div class="fw-bold text-dark d-flex align-items-center gap-2">${carIcon} ${record.plate_number}</div></td><td>${carType}</td><td>${record.inspector_name}</td><td><span class="badge" style="background: var(--success-light); color: var(--success); padding: 6px 10px; border-radius: 6px;">ปกติ</span></td></tr>`;
+                        if (!platesMap[record.plate_number]) {
+                            platesMap[record.plate_number] = { plate: record.plate_number, carStatus: null, craneStatus: null, inspector: record.inspector_name };
                         }
+                        
+                        let usage = 'พร้อมใช้งาน';
+                        if (record.raw_json && record.raw_json.usageCondition) usage = record.raw_json.usageCondition;
+                        else if (record.is_defective) usage = 'อยู่ระหว่างเข้าซ่อม';
+
+                        let statusData = {
+                            is_defective: record.is_defective,
+                            issues: record.issues_list,
+                            usageCondition: usage
+                        };
+
+                        if (record.car_type === 'เครนไฮดรอลิค') {
+                            if (!platesMap[record.plate_number].craneStatus) platesMap[record.plate_number].craneStatus = statusData;
+                        } else {
+                            if (!platesMap[record.plate_number].carStatus) platesMap[record.plate_number].carStatus = statusData;
+                        }
+                    });
+                    
+                    Object.values(platesMap).forEach(data => {
+                        inspectedPlates.push(data.plate);
+                        
+                        let getBadge = (statusObj) => {
+                            if (!statusObj) return '<span class="text-muted">-</span>';
+                            if (statusObj.usageCondition === "ไม่ได้ใช้งาน") {
+                                return `<span class="badge bg-secondary">ไม่ได้ใช้งาน</span>`;
+                            } else if (statusObj.is_defective || statusObj.usageCondition === "อยู่ระหว่างเข้าซ่อม") {
+                                return `<span class="badge" style="background: var(--danger-light); color: var(--danger); padding: 6px 10px; border-radius: 6px;">ซ่อม: ${statusObj.issues || 'พบปัญหา'}</span>`;
+                            } else {
+                                return `<span class="badge" style="background: var(--success-light); color: var(--success); padding: 6px 10px; border-radius: 6px;">ปกติ</span>`;
+                            }
+                        };
+
+                        let carBadge = getBadge(data.carStatus);
+                        let craneBadge = getBadge(data.craneStatus);
+                        
+                        issueBody.innerHTML += `<tr>
+                            <td><div class="fw-bold text-dark d-flex align-items-center gap-2"><i class="ph ph-car text-primary fs-5"></i> ${data.plate}</div></td>
+                            <td>${carBadge}</td>
+                            <td>${craneBadge}</td>
+                            <td>${data.inspector}</td>
+                        </tr>`;
                     });
             
                     let missingCount = 0;
