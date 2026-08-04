@@ -1011,7 +1011,7 @@
                 let dateStr = d.getDate().toString().padStart(2, '0') + '/' + (d.getMonth()+1).toString().padStart(2, '0') + '/' + d.getFullYear();
                 html += '<div><strong>วันที่:</strong> ' + dateStr + '</div><hr/>';
                 
-                const renderIssues = (title, statusObj) => {
+                const renderIssues = (title, statusObj, checklistLabels) => {
                     if (!statusObj) return '';
                     let res = '<h6 class="fw-bold mt-3 text-primary">' + title + '</h6>';
                     res += '<div class="mb-2">สภาพการใช้งาน: <strong>' + statusObj.usageCondition + '</strong></div>';
@@ -1021,7 +1021,8 @@
                         for (let i = 1; i <= 30; i++) {
                             if (statusObj.raw['status_' + i] === 'แก้ไข') {
                                 hasDefect = true;
-                                listHtml += '<li>ข้อ ' + i + ': ' + (statusObj.raw['defect_' + i] || 'ไม่ระบุอาการ') + '</li>';
+                                let itemName = checklistLabels[i-1] ? ` (${checklistLabels[i-1]})` : '';
+                                listHtml += `<li>ข้อ ${i}${itemName}: ${statusObj.raw['defect_' + i] || 'ไม่ระบุอาการ'}</li>`;
                             }
                         }
                         listHtml += '</ul>';
@@ -1031,8 +1032,8 @@
                     return res;
                 };
                 
-                html += renderIssues('การตรวจรถยนต์', data.carStatus);
-                html += renderIssues('การตรวจเครนไฮดรอลิค', data.craneStatus);
+                html += renderIssues('การตรวจรถยนต์', data.carStatus, vehicleChecklist);
+                html += renderIssues('การตรวจเครนไฮดรอลิค', data.craneStatus, craneChecklist);
                 html += '</div>';
                 
                 if (typeof Swal !== 'undefined') {
