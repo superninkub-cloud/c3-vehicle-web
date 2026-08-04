@@ -91,6 +91,7 @@ async function fetchMasterData() {
             if (!masterCars.find(c => c.plate === '90-1843 นฐ')) {
                 masterCars.push({ plate: '90-1843 นฐ', driver: 'นายขวัญนคร ศรีจันทร์อินทร์' });
             }
+            masterCars.sort((a, b) => a.plate.localeCompare(b.plate, 'th'));
         }
 
         // ดึงผู้ตรวจ
@@ -100,6 +101,7 @@ async function fetchMasterData() {
             if (!masterInspectors.includes('นายขวัญนคร ศรีจันทร์อินทร์')) {
                 masterInspectors.push('นายขวัญนคร ศรีจันทร์อินทร์');
             }
+            masterInspectors.sort((a, b) => a.localeCompare(b, 'th'));
         }
 
         populateDropdowns();
