@@ -23,7 +23,7 @@ const SUPABASE_ANON_KEY = 'C3_SUPABASE_KEY';
 function initSupabase() {
     // หากต้องการฝังค่าถาวร (Hardcode) เพื่อไม่ต้องกรอกทุกครั้ง สามารถใส่ค่าในเครื่องหมายคำพูดด้านล่างนี้ได้เลย
     const hardcodedUrl = "https://imxqmofvoklxgjwsgvvq.supabase.co"; 
-    const hardcodedKey = "";
+    const hardcodedKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlteHFtb2Z2b2tseGdqd3NndnZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ1NDk4NTgsImV4cCI6MjEwMDEyNTg1OH0.BFs6cW9NqaSlujhWu5QJOZL_N8GycXQpiVsqp1lV0vM";
 
     const url = localStorage.getItem(SUPABASE_URL_KEY) || hardcodedUrl;
     const key = localStorage.getItem(SUPABASE_ANON_KEY) || hardcodedKey;
