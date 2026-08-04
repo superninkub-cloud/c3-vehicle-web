@@ -152,7 +152,7 @@ function populateDropdowns() {
     const noCranePlates = ["90-1844 นฐ", "89-5769 นฐ", "90-1845 นฐ", "90-1842 นฐ", "90-1843 นฐ"];
     let cranePlateHtml = '<option value="">-- เลือกทะเบียน --</option>';
     masterCars.forEach(car => {
-        if (!noCranePlates.includes(car.plate)) {
+        if (!noCranePlates.includes(car.plate) && !car.plate.includes("หาง")) {
             cranePlateHtml += `<option value="${car.plate}">${car.plate}</option>`;
         }
     });
