@@ -221,14 +221,14 @@
                         
                         <div class="glass-card">
                             <div class="card-title-modern">
-                                <div class="icon-box danger"><i class="ph ph-warning-circle"></i></div>
-                                <span class="text-danger">รถที่พบปัญหา / ต้องแก้ไข</span>
+                                <div class="icon-box primary"><i class="ph ph-list-checks"></i></div>
+                                <span class="text-primary">รายการรถที่ตรวจสอบแล้ววันนี้</span>
                             </div>
                             <div class="table-responsive">
                                 <table class="table-modern w-100">
-                                    <thead><tr><th>ทะเบียนรถ</th><th>ผู้ตรวจสอบ</th><th>ปัญหาที่พบ</th></tr></thead>
+                                    <thead><tr><th>ทะเบียนรถ</th><th>ประเภท</th><th>ผู้ตรวจสอบ</th><th>สถานะ</th></tr></thead>
                                     <tbody id="dashIssueBody">
-                                        <tr><td colspan="3" class="text-center text-muted py-4">รอโหลดข้อมูล...</td></tr>
+                                        <tr><td colspan="4" class="text-center text-muted py-4">รอโหลดข้อมูล...</td></tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -801,7 +801,7 @@
                 const issueBody = document.getElementById('dashIssueBody');
                 const missingList = document.getElementById('dashMissingList');
                 
-                issueBody.innerHTML = '<tr><td colspan="3" class="text-center py-4">กำลังโหลด...</td></tr>';
+                issueBody.innerHTML = '<tr><td colspan="4" class="text-center py-4">กำลังโหลด...</td></tr>';
                 missingList.innerHTML = '<div class="text-center py-4">กำลังโหลด...</div>';
                 
                 try {
@@ -812,8 +812,13 @@
                     let inspectedPlates = [];
                     records.forEach(record => {
                         inspectedPlates.push(record.plate_number);
+                        const carType = record.car_type || 'รถยนต์';
+                        const carIcon = carType === 'รถยนต์' ? '<i class="ph ph-car text-primary fs-5"></i>' : '<i class="ph ph-truck text-warning fs-5"></i>';
+                        
                         if(record.is_defective) {
-                            issueBody.innerHTML += `<tr><td><div class="fw-bold text-danger d-flex align-items-center gap-2"><div style="width: 8px; height: 8px; border-radius: 50%; background: var(--danger);"></div>${record.plate_number}</div></td><td>${record.inspector_name}</td><td class="text-muted">${record.issues_list}</td></tr>`;
+                            issueBody.innerHTML += `<tr><td><div class="fw-bold text-dark d-flex align-items-center gap-2">${carIcon} ${record.plate_number}</div></td><td>${carType}</td><td>${record.inspector_name}</td><td><span class="badge" style="background: var(--danger-light); color: var(--danger); padding: 6px 10px; border-radius: 6px;">พบปัญหา: ${record.issues_list}</span></td></tr>`;
+                        } else {
+                            issueBody.innerHTML += `<tr><td><div class="fw-bold text-dark d-flex align-items-center gap-2">${carIcon} ${record.plate_number}</div></td><td>${carType}</td><td>${record.inspector_name}</td><td><span class="badge" style="background: var(--success-light); color: var(--success); padding: 6px 10px; border-radius: 6px;">ปกติ</span></td></tr>`;
                         }
                     });
             
@@ -831,7 +836,7 @@
                     setProgressRing(percent);
             
                     if(issueBody.innerHTML === '') {
-                        issueBody.innerHTML = `<tr><td colspan="3" class="text-center py-5"><h5 class="fw-bold text-dark">ปกติทุกคัน!</h5><p class="text-muted mb-0">ไม่มีรายงานรถชำรุดในวันนี้</p></td></tr>`;
+                        issueBody.innerHTML = `<tr><td colspan="4" class="text-center py-5"><h5 class="fw-bold text-dark">ยังไม่มีข้อมูล</h5><p class="text-muted mb-0">ยังไม่มีการบันทึกการตรวจสอบในวันนี้</p></td></tr>`;
                     }
                     if(missingList.innerHTML === '') {
                         missingList.innerHTML = `<div class="text-center py-5"><h5 class="fw-bold text-dark">ตรวจครบ 100%</h5><p class="text-muted mb-0">ยอดเยี่ยมมาก!</p></div>`;
