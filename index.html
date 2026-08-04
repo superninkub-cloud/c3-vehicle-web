@@ -157,9 +157,6 @@
             <li class="nav-item" onclick="switchView('regulations')">
                 <i class="ph ph-book-open-text"></i> ระเบียบปฏิบัติ
             </li>
-            <li class="nav-item" onclick="switchView('settings')" style="margin-top: 20px;">
-                <i class="ph ph-gear"></i> ตั้งค่าฐานข้อมูล
-            </li>
         </ul>
     </div>
 
@@ -470,32 +467,6 @@
                 </div>
             </div>
 
-            <!-- ================= Settings View ================= -->
-            <div id="settings" class="view-section">
-                <div class="glass-card">
-                    <div class="card-title-modern">
-                        <div class="icon-box primary"><i class="ph ph-database"></i></div>
-                        <span>ตั้งค่าการเชื่อมต่อ Supabase</span>
-                    </div>
-                    
-                    <p class="text-muted mb-4">กรุณานำ Project URL และ API Key (anon/public) จากเว็บไซต์ Supabase มากรอกที่นี่ เพื่อให้ระบบสามารถบันทึกและดึงข้อมูลจริงได้</p>
-                    
-                    <form id="settingsForm" onsubmit="saveSupabaseSettings(event)">
-                        <div class="mb-3">
-                            <label class="form-label">Supabase URL</label>
-                            <input type="url" id="supaUrl" class="form-control" placeholder="https://xxxxxx.supabase.co" required>
-                        </div>
-                        <div class="mb-4">
-                            <label class="form-label">Supabase Anon Key</label>
-                            <input type="password" id="supaKey" class="form-control" placeholder="eyJhbG..." required>
-                        </div>
-                        <button type="submit" class="btn-modern btn-primary-modern w-100">
-                            <i class="ph ph-floppy-disk"></i> บันทึกการเชื่อมต่อ
-                        </button>
-                    </form>
-                </div>
-            </div>
-
         </div>
     </div>
 
@@ -575,8 +546,8 @@
                     }
                     supabase = window.supabase.createClient(url, key);
                     updateConnectionStatus(true);
-                    document.getElementById('supaUrl').value = url;
-                    document.getElementById('supaKey').value = key;
+                    // document.getElementById('supaUrl').value = url;
+                    // document.getElementById('supaKey').value = key;
                     fetchMasterData();
                 } else {
                     updateConnectionStatus(false);
