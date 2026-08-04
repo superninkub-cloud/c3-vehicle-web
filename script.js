@@ -86,11 +86,21 @@ async function fetchMasterData() {
     try {
         // ดึงรถ
         const { data: cars, error: err1 } = await supabase.from('vehicles').select('*');
-        if (!err1 && cars) masterCars = cars.map(c => ({ plate: c.plate_number, driver: c.default_driver }));
+        if (!err1 && cars) {
+            masterCars = cars.map(c => ({ plate: c.plate_number, driver: c.default_driver }));
+            if (!masterCars.find(c => c.plate === '90-1843 นฐ')) {
+                masterCars.push({ plate: '90-1843 นฐ', driver: 'นายขวัญนคร ศรีจันทร์อินทร์' });
+            }
+        }
 
         // ดึงผู้ตรวจ
         const { data: insp, error: err2 } = await supabase.from('inspectors').select('*');
-        if (!err2 && insp) masterInspectors = insp.map(i => i.full_name);
+        if (!err2 && insp) {
+            masterInspectors = insp.map(i => i.full_name);
+            if (!masterInspectors.includes('นายขวัญนคร ศรีจันทร์อินทร์')) {
+                masterInspectors.push('นายขวัญนคร ศรีจันทร์อินทร์');
+            }
+        }
 
         populateDropdowns();
         loadDashboard();
