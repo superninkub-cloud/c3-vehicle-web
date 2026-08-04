@@ -136,7 +136,17 @@ function populateDropdowns() {
     plateHtml += '<option value="อื่นๆ">อื่นๆ</option>';
 
     document.getElementById('vPlate').innerHTML = plateHtml;
-    document.getElementById('cPlate').innerHTML = plateHtml;
+    
+    const noCranePlates = ["90-1844 นฐ", "89-5769 นฐ", "90-1845 นฐ", "90-1842 นฐ", "90-1843 นฐ"];
+    let cranePlateHtml = '<option value="">-- เลือกทะเบียน --</option>';
+    masterCars.forEach(car => {
+        if (!noCranePlates.includes(car.plate)) {
+            cranePlateHtml += `<option value="${car.plate}">${car.plate}</option>`;
+        }
+    });
+    cranePlateHtml += '<option value="อื่นๆ">อื่นๆ</option>';
+
+    document.getElementById('cPlate').innerHTML = cranePlateHtml;
 
     let inspHtml = '<option value="">-- เลือกผู้ตรวจ --</option>';
     masterInspectors.forEach(n => inspHtml += `<option value="${n}">${n}</option>`);
