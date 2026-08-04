@@ -21,8 +21,13 @@ const SUPABASE_URL_KEY = 'C3_SUPABASE_URL';
 const SUPABASE_ANON_KEY = 'C3_SUPABASE_KEY';
 
 function initSupabase() {
-    const url = localStorage.getItem(SUPABASE_URL_KEY);
-    const key = localStorage.getItem(SUPABASE_ANON_KEY);
+    // หากต้องการฝังค่าถาวร (Hardcode) เพื่อไม่ต้องกรอกทุกครั้ง สามารถใส่ค่าในเครื่องหมายคำพูดด้านล่างนี้ได้เลย
+    // ตัวอย่าง: const hardcodedUrl = "https://xxxxxx.supabase.co";
+    const hardcodedUrl = ""; 
+    const hardcodedKey = "";
+
+    const url = localStorage.getItem(SUPABASE_URL_KEY) || hardcodedUrl;
+    const key = localStorage.getItem(SUPABASE_ANON_KEY) || hardcodedKey;
     
     if (url && key) {
         if (typeof window.supabase === 'undefined') {
