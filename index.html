@@ -540,8 +540,14 @@
                 const hardcodedUrl = "https://imxqmofvoklxgjwsgvvq.supabase.co"; 
                 const hardcodedKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlteHFtb2Z2b2tseGdqd3NndnZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ1NDk4NTgsImV4cCI6MjEwMDEyNTg1OH0.BFs6cW9NqaSlujhWu5QJOZL_N8GycXQpiVsqp1lV0vM";
 
-                const url = localStorage.getItem(SUPABASE_URL_KEY) || hardcodedUrl;
-                const key = localStorage.getItem(SUPABASE_ANON_KEY) || hardcodedKey;
+                let url = hardcodedUrl;
+                let key = hardcodedKey;
+                try {
+                    if (localStorage.getItem(SUPABASE_URL_KEY)) url = localStorage.getItem(SUPABASE_URL_KEY);
+                    if (localStorage.getItem(SUPABASE_ANON_KEY)) key = localStorage.getItem(SUPABASE_ANON_KEY);
+                } catch (e) {
+                    console.warn("localStorage is not available, using hardcoded fallback.");
+                }
                 
                 if (url && key) {
                     if (typeof window.supabase === 'undefined') {
@@ -591,8 +597,12 @@
                 e.preventDefault();
                 const url = document.getElementById('supaUrl').value.trim();
                 const key = document.getElementById('supaKey').value.trim();
-                localStorage.setItem(SUPABASE_URL_KEY, url);
-                localStorage.setItem(SUPABASE_ANON_KEY, key);
+                try {
+                    localStorage.setItem(SUPABASE_URL_KEY, url);
+                    localStorage.setItem(SUPABASE_ANON_KEY, key);
+                } catch (e) {
+                    console.warn("localStorage is not available for saving.");
+                }
                 initSupabase();
                 if(Toast) {
                     Toast.fire({
