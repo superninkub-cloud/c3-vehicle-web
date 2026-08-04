@@ -231,9 +231,9 @@
                             </div>
                             <div class="table-responsive">
                                 <table class="table-modern w-100">
-                                    <thead><tr><th>ทะเบียนรถ</th><th>วันที่ตรวจล่าสุด</th><th>สถานะตัวรถ</th><th>สถานะเครน</th><th>ผู้ตรวจสอบล่าสุด</th></tr></thead>
+                                    <thead><tr><th>ทะเบียนรถ</th><th>วันที่ตรวจล่าสุด</th><th>สถานะตัวรถ</th><th>สถานะเครน</th><th>ผู้ตรวจสอบล่าสุด</th><th class="text-center">รายละเอียด</th></tr></thead>
                                     <tbody id="dashIssueBody">
-                                        <tr><td colspan="5" class="text-center text-muted py-4">รอโหลดข้อมูล...</td></tr>
+                                        <tr><td colspan="6" class="text-center text-muted py-4">รอโหลดข้อมูล...</td></tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -566,7 +566,7 @@
             function loadDashboardOffline() {
                 const issueBody = document.getElementById('dashIssueBody');
                 const missingList = document.getElementById('dashMissingList');
-                issueBody.innerHTML = `<tr><td colspan="3" class="text-center py-5"><h5 class="fw-bold text-dark">โหมดออฟไลน์</h5><p class="text-muted mb-0">กรุณาตั้งค่าฐานข้อมูลเพื่อดูรายงาน</p></td></tr>`;
+                issueBody.innerHTML = `<tr><td colspan="6" class="text-center py-5"><h5 class="fw-bold text-dark">โหมดออฟไลน์</h5><p class="text-muted mb-0">กรุณาตั้งค่าฐานข้อมูลเพื่อดูรายงาน</p></td></tr>`;
                 
                 missingList.innerHTML = '';
                 masterCars.forEach(car => {
@@ -844,7 +844,7 @@
                 const issueBody = document.getElementById('dashIssueBody');
                 const missingList = document.getElementById('dashMissingList');
                 
-                issueBody.innerHTML = '<tr><td colspan="5" class="text-center py-4">กำลังโหลด...</td></tr>';
+                issueBody.innerHTML = '<tr><td colspan="6" class="text-center py-4">กำลังโหลด...</td></tr>';
                 missingList.innerHTML = '<div class="text-center py-4">กำลังโหลด...</div>';
                 
                 try {
@@ -882,7 +882,8 @@
                         let statusData = {
                             is_defective: record.is_defective,
                             issues: record.issues_list,
-                            usageCondition: usage
+                            usageCondition: usage,
+                            raw: record.raw_json
                         };
 
                         if (record.car_type === 'เครนไฮดรอลิค') {
@@ -892,6 +893,7 @@
                         }
                     });
                     
+                    window.dashDataMap = platesMap;
                     Object.values(platesMap).forEach(data => {
                         inspectedPlates.push(data.plate);
                         
@@ -918,6 +920,7 @@
                             <td>${carBadge}</td>
                             <td>${craneBadge}</td>
                             <td>${data.inspector}</td>
+                            <td class="text-center"><button class="btn btn-sm btn-outline-primary rounded-pill px-3 py-1" onclick="showDetails('${data.plate}')"><i class="ph ph-magnifying-glass"></i> ดูข้อมูล</button></td>
                         </tr>`;
                     });
             
@@ -935,7 +938,7 @@
                     setProgressRing(percent);
             
                     if(issueBody.innerHTML === '') {
-                        issueBody.innerHTML = `<tr><td colspan="5" class="text-center py-5"><h5 class="fw-bold text-dark">ยังไม่มีข้อมูล</h5><p class="text-muted mb-0">ยังไม่มีการบันทึกการตรวจสอบ</p></td></tr>`;
+                        issueBody.innerHTML = `<tr><td colspan="6" class="text-center py-5"><h5 class="fw-bold text-dark">ยังไม่มีข้อมูล</h5><p class="text-muted mb-0">ยังไม่มีการบันทึกการตรวจสอบ</p></td></tr>`;
                     }
                     if(missingList.innerHTML === '') {
                         missingList.innerHTML = `<div class="text-center py-5"><h5 class="fw-bold text-dark">ตรวจครบ 100%</h5><p class="text-muted mb-0">ยอดเยี่ยมมาก!</p></div>`;
@@ -996,6 +999,53 @@
 
 โดย ${r.inspector_name}
 (พขร.บ.) ผู้ตรวจสอบ`;
+            };
+            
+            window.showDetails = function(plate) {
+                const data = window.dashDataMap[plate];
+                if (!data) return;
+                
+                let html = '<div style="text-align: left; font-size: 15px;">';
+                html += '<div><strong>ผู้ตรวจสอบ:</strong> ' + data.inspector + '</div>';
+                let d = new Date(data.checkDate);
+                let dateStr = d.getDate().toString().padStart(2, '0') + '/' + (d.getMonth()+1).toString().padStart(2, '0') + '/' + d.getFullYear();
+                html += '<div><strong>วันที่:</strong> ' + dateStr + '</div><hr/>';
+                
+                const renderIssues = (title, statusObj) => {
+                    if (!statusObj) return '';
+                    let res = '<h6 class="fw-bold mt-3 text-primary">' + title + '</h6>';
+                    res += '<div class="mb-2">สภาพการใช้งาน: <strong>' + statusObj.usageCondition + '</strong></div>';
+                    if (statusObj.raw) {
+                        let hasDefect = false;
+                        let listHtml = '<ul class="text-danger" style="padding-left: 20px;">';
+                        for (let i = 1; i <= 30; i++) {
+                            if (statusObj.raw['status_' + i] === 'แก้ไข') {
+                                hasDefect = true;
+                                listHtml += '<li>ข้อ ' + i + ': ' + (statusObj.raw['defect_' + i] || 'ไม่ระบุอาการ') + '</li>';
+                            }
+                        }
+                        listHtml += '</ul>';
+                        if (hasDefect) res += listHtml;
+                        else res += '<div class="text-success mt-1"><i class="ph ph-check-circle"></i> ทุกรายการปกติ</div>';
+                    }
+                    return res;
+                };
+                
+                html += renderIssues('การตรวจรถยนต์', data.carStatus);
+                html += renderIssues('การตรวจเครนไฮดรอลิค', data.craneStatus);
+                html += '</div>';
+                
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        title: 'รายละเอียด: ' + plate,
+                        html: html,
+                        confirmButtonText: 'ปิดหน้าต่าง',
+                        confirmButtonColor: 'var(--primary)',
+                        width: '450px'
+                    });
+                } else {
+                    alert('รายละเอียด: ' + plate + '\\nผู้ตรวจสอบ: ' + data.inspector);
+                }
             };
             
             window.copyToClipboard = function() {
