@@ -609,10 +609,22 @@
                 if (!supabase) return;
                 try {
                     const { data: cars, error: err1 } = await supabase.from('vehicles').select('*');
-                    if (!err1 && cars && cars.length > 0) masterCars = cars.map(c => ({ plate: c.plate_number, driver: c.default_driver }));
+                    if (!err1 && cars && cars.length > 0) {
+                        masterCars = cars.map(c => ({ plate: c.plate_number, driver: c.default_driver }));
+                        if (!masterCars.find(c => c.plate === '90-1843 นฐ')) {
+                            masterCars.push({ plate: '90-1843 นฐ', driver: 'นายขวัญนคร ศรีจันทร์อินทร์' });
+                        }
+                        masterCars.sort((a, b) => a.plate.localeCompare(b.plate, 'th'));
+                    }
                     
                     const { data: insp, error: err2 } = await supabase.from('inspectors').select('*');
-                    if (!err2 && insp && insp.length > 0) masterInspectors = insp.map(i => i.full_name);
+                    if (!err2 && insp && insp.length > 0) {
+                        masterInspectors = insp.map(i => i.full_name);
+                        if (!masterInspectors.includes('นายขวัญนคร ศรีจันทร์อินทร์')) {
+                            masterInspectors.push('นายขวัญนคร ศรีจันทร์อินทร์');
+                        }
+                        masterInspectors.sort((a, b) => a.localeCompare(b, 'th'));
+                    }
                     
                     populateDropdowns();
                     loadDashboard();
@@ -650,7 +662,16 @@
                 masterCars.forEach(car => plateHtml += `<option value="${car.plate}">${car.plate}</option>`);
                 plateHtml += '<option value="อื่นๆ">อื่นๆ</option>';
                 document.getElementById('vPlate').innerHTML = plateHtml;
-                document.getElementById('cPlate').innerHTML = plateHtml;
+                
+                const noCranePlates = ["90-1844 นฐ", "89-5769 นฐ", "90-1845 นฐ", "90-1842 นฐ", "90-1843 นฐ"];
+                let cranePlateHtml = '<option value="">-- เลือกทะเบียน --</option>';
+                masterCars.forEach(car => {
+                    if (!noCranePlates.includes(car.plate)) {
+                        cranePlateHtml += `<option value="${car.plate}">${car.plate}</option>`;
+                    }
+                });
+                cranePlateHtml += '<option value="อื่นๆ">อื่นๆ</option>';
+                document.getElementById('cPlate').innerHTML = cranePlateHtml;
             
                 let inspHtml = '<option value="">-- เลือกผู้ตรวจ --</option>';
                 masterInspectors.forEach(n => inspHtml += `<option value="${n}">${n}</option>`);
