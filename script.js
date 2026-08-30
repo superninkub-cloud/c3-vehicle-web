@@ -1,4 +1,4 @@
-// --- ข้อมูลพื้นฐานสำหรับแสดงผล (เผื่อกรณียังไม่ต่อเน็ต/ต่อฐานข้อมูล) ---
+﻿// --- ข้อมูลพื้นฐานสำหรับแสดงผล (เผื่อกรณียังไม่ต่อเน็ต/ต่อฐานข้อมูล) ---
 const vehicleChecklist = [
     "ตรวจบันทึกประวัติต่างๆ", "แผนการบำรุงรักษา", "การต่อทะเบียน/ป้าย", "ความสะอาดห้องเครื่อง",
     "รอยรั่วน้ำมันต่างๆ", "สายพาน หม้อน้ำ พัดลม", "ระดับน้ำมันเครื่อง", "เกียร์", "ครัช", "เบรก",
@@ -283,6 +283,19 @@ async function submitForm(e, carType) {
         if (error) throw error;
 
         Toast.fire({ icon: 'success', title: 'บันทึกข้อมูลลงฐานข้อมูลเรียบร้อยแล้ว!' });
+
+        // --- ADDED: Send LINE Notify ---
+        try {
+            fetch('/api/notify', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            }).catch(e => console.error('Error triggering LINE alert:', e));
+        } catch (e) {
+            console.error('Failed to call notify API', e);
+        }
+        // -------------------------------
+
         document.getElementById(formId).reset();
 
         // Reset Date
@@ -466,3 +479,4 @@ function copyToClipboard() {
         Toast.fire({ icon: 'success', title: 'คัดลอกสำเร็จ!', text: 'นำไปวางในแชท LINE ได้เลย' });
     });
 }
+
