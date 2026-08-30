@@ -1566,24 +1566,46 @@
                 const r = recentRecords[index];
                 let d = new Date(r.check_date);
                 let thaiMonths = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
+                
+                const dataObj = r.raw_json || {};
+                const carType = r.car_type || 'รถยนต์';
+                
+                const getStatus = (idx) => {
+                    const val = dataObj["status_" + idx];
+                    if (val === "ปกติ") return "✅ ปกติ";
+                    if (val === "แก้ไข") return "❌ แก้ไข (" + (dataObj["defect_" + idx] || "-") + ")";
+                    return "❓ ไม่ระบุ";
+                };
+
+                let summaryText = "";
+                if (carType === 'รถยนต์') {
+                    summaryText = "🔍 สรุปผลการตรวจสภาพรถยนต์ก่อนออกปฏิบัติงาน มีรายละเอียดดังนี้ :\n" +
+                        "1. ระบบเบรก: " + getStatus(10) + "\n" +
+                        "2. น้ำมันเครื่อง: " + getStatus(7) + "\n" +
+                        "3. รอยรั่วซึม: " + getStatus(5) + "\n" +
+                        "4. หม้อน้ำ/สายพาน: " + getStatus(6) + "\n" +
+                        "5. ระบบไฟ/สัญญาณ: " + getStatus(11) + "\n" +
+                        "6. แบตเตอรี่: " + getStatus(14) + "\n" +
+                        "7. ล้อและยาง: " + getStatus(22);
+                } else {
+                    summaryText = "🔍 สรุปผลการตรวจสภาพเครนไฮดรอลิคก่อนปฏิบัติงาน มีรายละเอียดดังนี้ :\n" +
+                        "1. ระบบคอนโทรล: " + getStatus(1) + "\n" +
+                        "2. สาย/น้ำมันไฮดรอลิค: " + (dataObj["status_4"]==="แก้ไข"||dataObj["status_5"]==="แก้ไข" ? "❌ แก้ไข" : "✅ ปกติ") + "\n" +
+                        "3. ขาค้ำยัน: " + getStatus(8) + "\n" +
+                        "4. ชุดวิ้นซ์-เบรค: " + getStatus(11) + "\n" +
+                        "5. ฮุก/เซฟตี้ล็อค: " + getStatus(15);
+                }
+
+                let statusText = "✅ ปกติพร้อมใช้งาน";
+                if (r.is_defective) statusText = "❌ พบข้อบกพร่อง/อยู่ระหว่างเข้าซ่อม";
+
                 document.getElementById('outputText').value = `วันที่ ${d.getDate()} ${thaiMonths[d.getMonth()]} ${d.getFullYear() + 543}
 ผกร.กรย.กฟก.3 ตรวจสอบยานพาหนะ
-ทะเบียน ${r.plate_number} ก่อนออกปฏิบัติงาน 
-เพื่อความปลอดภัย ได้ดำเนินการตรวจสอบ ดังนี้
+🚗 ทะเบียน: ${r.plate_number} (${carType})
+👤 ผู้ตรวจ: ${r.inspector_name}
+📊 สถานะ: ${statusText}
 
-📌 สภาพการใช้งาน: ${r.raw_json && r.raw_json.usageCondition ? r.raw_json.usageCondition : 'พร้อมใช้งาน'}
-
-✅ ระดับน้ำมันเครื่อง       ผลปกติ
-✅ ระดับน้ำหล่อเย็น         ผลปกติ
-✅ ระบบน้ำมันเกียร์         ผลปกติ
-✅ ระดับน้ำมันหล่อลื่น      ผลปกติ
-✅ สภาพยาง                  ผลปกติ
-✅ แบตเตอรี่                  ผลปกติ
-✅ ระบบไฟต่างๆ             ผลปกติ
-✅ ถังดับเพลิง                ผลปกติ
-
-โดย ${r.inspector_name}
-(พขร.บ.) ผู้ตรวจสอบ`;
+${summaryText}`;
             };
 
             window.showDetails = function (plate) {
