@@ -10,12 +10,12 @@
     return res.status(500).json({ message: 'Missing LINE token in environment variables' });
   }
 
-  const statusText = is_defective ? ⚠️ พบข้อบกพร่อง\nรายละเอียด:  : '✅ ปกติพร้อมใช้งาน';
+  const statusText = is_defective ? "⚠️ พบข้อบกพร่อง\nรายละเอียด: " + issues_list : "✅ ปกติพร้อมใช้งาน";
 
-  const message = 🚨 [แจ้งเตือน] ส่งผลตรวจรถใหม่!
-🚗 ทะเบียน:  ()
-👤 ผู้ตรวจ: 
-📊 สถานะ: ;
+  const message = "🚨 [แจ้งเตือน] ส่งผลตรวจรถใหม่!\n" +
+    "🚗 ทะเบียน: " + plate_number + " (" + car_type + ")\n" +
+    "👤 ผู้ตรวจ: " + inspector_name + "\n" +
+    "📊 สถานะ: " + statusText;
 
   try {
     const response = await fetch("https://api.line.me/v2/bot/message/broadcast", {
@@ -36,4 +36,3 @@
     return res.status(500).json({ success: false, error: error.message });
   }
 }
-
