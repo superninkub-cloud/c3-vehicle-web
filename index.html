@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="th">
 <head>
     <meta charset="UTF-8">
@@ -799,6 +799,19 @@
                     if (error) throw error;
                     if(Toast) Toast.fire({ icon: 'success', title: 'บันทึกสำเร็จ!' });
                     else alert('บันทึกสำเร็จ!');
+
+                    // --- ADDED: Send LINE Notify ---
+                    try {
+                        fetch('/api/notify', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        }).catch(e => console.error('Error triggering LINE alert:', e));
+                    } catch (e) {
+                        console.error('Failed to call notify API', e);
+                    }
+                    // -------------------------------
+
                     document.getElementById(formId).reset();
                     const today = new Date().toISOString().split('T')[0];
                     document.getElementById(carType === 'รถยนต์' ? 'vCheckDate' : 'cCheckDate').value = today;
