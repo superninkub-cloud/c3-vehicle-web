@@ -3,7 +3,7 @@
     return res.status(405).json({ message: 'Method Not Allowed' });
   }
 
-  const { plate_number, inspector_name, is_defective, issues_list, car_type } = req.body;
+  const { plate_number, inspector_name, is_defective, issues_list, car_type, summary_text } = req.body;
   const channelToken = process.env.LINE_CHANNEL_ACCESS_TOKEN;
 
   if (!channelToken) {
@@ -12,10 +12,12 @@
 
   const statusText = is_defective ? "⚠️ พบข้อบกพร่อง\nรายละเอียด: " + issues_list : "✅ ปกติพร้อมใช้งาน";
 
-  const message = "🚨 [แจ้งเตือน] ส่งผลตรวจรถใหม่!\n" +
+  let message = "🚨 [แจ้งเตือน] ส่งผลตรวจรถใหม่!\n" +
     "🚗 ทะเบียน: " + plate_number + " (" + car_type + ")\n" +
     "👤 ผู้ตรวจ: " + inspector_name + "\n" +
     "📊 สถานะ: " + statusText;
+
+  if (summary_text) { message += summary_text; }
 
   try {
     const response = await fetch("https://api.line.me/v2/bot/message/broadcast", {
@@ -36,3 +38,4 @@
     return res.status(500).json({ success: false, error: error.message });
   }
 }
+

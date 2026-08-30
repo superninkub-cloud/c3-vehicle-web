@@ -485,7 +485,7 @@
                 "ตรวจบันทึกประวัติต่างๆ", "แผนการบำรุงรักษา", "การต่อทะเบียน/ป้าย", "ความสะอาดห้องเครื่อง", 
                 "รอยรั่วน้ำมันต่างๆ", "สายพาน หม้อน้ำ พัดลม", "ระดับน้ำมันเครื่อง", "เกียร์", "ครัช", "เบรก", 
                 "แสงสว่าง", "สัญญาณแตร/ไฟเลี้ยว", "ไฟท้าย/เบรก", "แบตเตอรี่", "ปัดน้ำฝน", "เครื่องปรับอากาศ",
-                "ระยะฟรีพวงมาลัย", "การทำงานเบรคมือ", "ตัวถัง/สี", "กระบะบรรทุก", "เบาะนั่ง"
+                "ระยะฟรีพวงมาลัย", "การทำงานเบรคมือ", "ตัวถัง/สี", "กระบะบรรทุก", "เบาะนั่ง", "สภาพล้อและยางรถยนต์"
             ];
             
             const craneChecklist = [
@@ -802,10 +802,38 @@
 
                     // --- ADDED: Send LINE Notify ---
                     try {
-                        fetch('/api/notify', {
+                        let summaryText = "";
+                        const getStatus = (idx) => {
+                            const val = dataObj["status_" + idx];
+                            if (val === "ปกติ") return "✅ ปกติ";
+                            if (val === "แก้ไข") return "❌ แก้ไข (" + (dataObj["defect_" + idx] || "-") + ")";
+                            return "❓ ไม่ระบุ";
+                        };
+                        
+                        if (carType === 'รถยนต์') {
+                            summaryText = "\n\n🔍 สรุปจุดสำคัญ (Top 7 Checks):\n" +
+                                "1. ระบบเบรก: " + getStatus(10) + "\n" +
+                                "2. น้ำมันเครื่อง: " + getStatus(7) + "\n" +
+                                "3. รอยรั่วซึม: " + getStatus(5) + "\n" +
+                                "4. หม้อน้ำ/สายพาน: " + getStatus(6) + "\n" +
+                                "5. ระบบไฟ/สัญญาณ: " + getStatus(11) + "\n" +
+                                "6. แบตเตอรี่: " + getStatus(14) + "\n" +
+                                "7. ล้อและยาง: " + getStatus(22);
+                        } else {
+                            summaryText = "\n\n🔍 สรุปจุดสำคัญ (Top 5 Checks):\n" +
+                                "1. ระบบคอนโทรล: " + getStatus(1) + "\n" +
+                                "2. สาย/น้ำมันไฮดรอลิค: " + (dataObj["status_4"]==="แก้ไข"||dataObj["status_5"]==="แก้ไข" ? "❌ แก้ไข" : "✅ ปกติ") + "\n" +
+                                "3. ขาค้ำยัน: " + getStatus(8) + "\n" +
+                                "4. ชุดวิ้นซ์-เบรค: " + getStatus(11) + "\n" +
+                                "5. ฮุก/เซฟตี้ล็อค: " + getStatus(15);
+                        }
+
+                        const notifyPayload = { ...payload, summary_text: summaryText };
+
+                        fetch('https://c3-vehicle-web.vercel.app/api/notify', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(payload)
+                            body: JSON.stringify(notifyPayload)
                         }).catch(e => console.error('Error triggering LINE alert:', e));
                     } catch (e) {
                         console.error('Failed to call notify API', e);
