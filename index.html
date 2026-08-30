@@ -1201,6 +1201,19 @@
                 initSupabase();
             };
 
+            window.getInspectorPosition = (name) => {
+                const positions = {
+                    "นายพิสันติ์ จิตต์ปลื้ม": "หผ.กร.",
+                    "นายชานินทร์ ศรีสวัสดิ์": "ชผ.กร.",
+                    "นายอุดมศักดิ์ จันทร์กลิ่น": "พชง.7",
+                    "นายศราวุฒิ เกิดสีเล็ก": "พชง.6",
+                    "นายศุภวิชญ์ เกาะลอย": "พชง.6",
+                    "นายวีรพัฒน์ นาคลมัย": "พชง.6",
+                    "นายขวัญนคร ศรีจันทร์อินทร์": "พชง.5"
+                };
+                return positions[name] || "พขร.บ.";
+            };
+
             function populateDropdowns() {
                 let plateHtml = '<option value="">-- เลือกทะเบียน --</option>';
                 masterCars.forEach(car => plateHtml += `<option value="${car.plate}">${car.plate}</option>`);
@@ -1362,7 +1375,11 @@
                                 "5. ฮุก/เซฟตี้ล็อค: " + getStatus(15);
                         }
 
-                        const notifyPayload = { ...payload, summary_text: summaryText };
+                        const notifyPayload = { 
+                            ...payload, 
+                            inspector_name: `${payload.inspector_name} (${window.getInspectorPosition(payload.inspector_name)})`,
+                            summary_text: summaryText 
+                        };
 
                         fetch('https://c3-vehicle-web.vercel.app/api/notify', {
                             method: 'POST',
@@ -1599,10 +1616,10 @@
                 let statusText = "✅ ปกติพร้อมใช้งาน";
                 if (r.is_defective) statusText = "❌ พบข้อบกพร่อง/อยู่ระหว่างเข้าซ่อม";
 
-                document.getElementById('outputText').value = `วันที่ ${d.getDate()} ${thaiMonths[d.getMonth()]} ${d.getFullYear() + 543}
+document.getElementById('outputText').value = `วันที่ ${d.getDate()} ${thaiMonths[d.getMonth()]} ${d.getFullYear() + 543}
 ผกร.กรย.กฟก.3 ตรวจสอบยานพาหนะ
 🚗 ทะเบียน: ${r.plate_number} (${carType})
-👤 ผู้ตรวจ: ${r.inspector_name}
+👤 ผู้ตรวจ: ${r.inspector_name} (${window.getInspectorPosition(r.inspector_name)})
 📊 สถานะ: ${statusText}
 
 ${summaryText}`;
