@@ -1,19 +1,20 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>PEA C3 Check Vehicle Pro</title>
-    
+
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    
+
     <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    
+
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
@@ -38,95 +39,566 @@
             --border: #e2e8f0;
             --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
             --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            --shadow-card: 0 20px 40px -15px rgba(0,0,0,0.05);
+            --shadow-card: 0 20px 40px -15px rgba(0, 0, 0, 0.05);
             --radius-md: 12px;
             --radius-lg: 20px;
             --radius-xl: 24px;
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Kanit', sans-serif; }
-        body { background-color: var(--bg-body); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; -webkit-font-smoothing: antialiased; }
-        .sidebar { width: 280px; background-color: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-right: 1px solid rgba(255,255,255,0.5); box-shadow: var(--shadow-card); display: flex; flex-direction: column; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); z-index: 1000; }
-        .sidebar-header { padding: 32px 24px 24px; display: flex; align-items: center; gap: 16px; }
-        .logo-icon { width: 48px; height: 48px; background: linear-gradient(135deg, var(--primary), #60a5fa); border-radius: 14px; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; box-shadow: 0 8px 16px rgba(37, 99, 235, 0.2); }
-        .logo-text { font-size: 18px; font-weight: 700; line-height: 1.2; color: var(--text-main); }
-        .logo-sub { font-size: 12px; font-weight: 400; color: var(--text-muted); }
-        .nav-menu { list-style: none; padding: 16px; flex-grow: 1; overflow-y: auto; }
-        .nav-item { padding: 14px 20px; margin-bottom: 8px; border-radius: var(--radius-md); cursor: pointer; display: flex; align-items: center; gap: 16px; color: var(--text-muted); font-weight: 500; font-size: 16px; transition: all 0.3s ease; }
-        .nav-item i { font-size: 20px; transition: transform 0.3s ease; }
-        .nav-item:hover { background-color: var(--bg-body); color: var(--primary); }
-        .nav-item:hover i { transform: scale(1.1); }
-        .nav-item.active { background-color: var(--primary-light); color: var(--primary); }
-        .main-content { flex-grow: 1; display: flex; flex-direction: column; height: 100vh; overflow: hidden; position: relative; }
-        .topbar { height: 80px; display: flex; align-items: center; justify-content: space-between; padding: 0 32px; background-color: rgba(248, 250, 252, 0.8); backdrop-filter: blur(10px); z-index: 10; }
-        .page-title { font-size: 24px; font-weight: 700; color: var(--text-main); margin: 0; letter-spacing: -0.5px; }
-        .user-profile { display: flex; align-items: center; gap: 12px; background: white; padding: 6px 16px 6px 6px; border-radius: 50px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); }
-        .content-area { padding: 0 32px 32px; overflow-y: auto; flex-grow: 1; scroll-behavior: smooth; }
-        .content-area::-webkit-scrollbar { width: 8px; }
-        .content-area::-webkit-scrollbar-track { background: transparent; }
-        .content-area::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        .view-section { display: none; animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(20px); }
-        .view-section.active { display: block; }
-        @keyframes slideUpFade { to { opacity: 1; transform: translateY(0); } }
-        .glass-card { background: var(--bg-card); border-radius: var(--radius-xl); border: 1px solid rgba(255,255,255,0.7); box-shadow: var(--shadow-card); padding: 32px; margin-bottom: 24px; transition: transform 0.3s ease, box-shadow 0.3s ease; }
-        .glass-card:hover { transform: translateY(-2px); box-shadow: 0 25px 50px -12px rgba(0,0,0,0.08); }
-        .card-title-modern { font-size: 20px; font-weight: 600; margin-bottom: 24px; display: flex; align-items: center; gap: 12px; }
-        .icon-box { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
-        .icon-box.primary { background: var(--primary-light); color: var(--primary); }
-        .icon-box.warning { background: var(--warning-light); color: var(--warning); }
-        .icon-box.danger { background: var(--danger-light); color: var(--danger); }
-        .icon-box.success { background: var(--success-light); color: var(--success); }
-        .form-label { font-size: 14px; font-weight: 500; color: var(--text-muted); margin-bottom: 8px; }
-        .form-control, .form-select { background-color: var(--bg-body); border: 1px solid transparent; border-radius: var(--radius-md); padding: 12px 16px; font-size: 15px; color: var(--text-main); transition: all 0.3s ease; box-shadow: inset 0 2px 4px 0 rgba(0,0,0,0.02); }
-        .form-control:focus, .form-select:focus { background-color: white; border-color: var(--primary); box-shadow: 0 0 0 4px var(--primary-light); outline: none; }
-        .table-modern { width: 100%; border-collapse: separate; border-spacing: 0 8px; }
-        .table-modern th { font-weight: 500; color: var(--text-muted); font-size: 14px; padding: 0 16px 8px; border: none; }
-        .table-modern td { background: white; padding: 16px; vertical-align: middle; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
-        .table-modern td:first-child { border-left: 1px solid var(--border); border-radius: var(--radius-md) 0 0 var(--radius-md); font-weight: 500; }
-        .table-modern td:last-child { border-right: 1px solid var(--border); border-radius: 0 var(--radius-md) var(--radius-md) 0; }
-        .segmented-control { display: inline-flex; background-color: var(--bg-body); border-radius: 50px; padding: 4px; position: relative; }
-        .segmented-control input { display: none; }
-        .segmented-control label { padding: 6px 20px; font-size: 14px; font-weight: 500; color: var(--text-muted); cursor: pointer; border-radius: 50px; transition: all 0.3s ease; position: relative; z-index: 2; display: flex; align-items: center; gap: 6px; }
-        .segmented-control input[value="ปกติ"]:checked + label { background-color: var(--success); color: white; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3); }
-        .segmented-control input[value="แก้ไข"]:checked + label { background-color: var(--danger); color: white; box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3); }
-        .btn-modern { padding: 14px 28px; border-radius: 50px; font-weight: 600; font-size: 16px; transition: all 0.3s ease; border: none; display: inline-flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; }
-        .btn-primary-modern { background: linear-gradient(135deg, var(--primary), #3b82f6); color: white; box-shadow: 0 8px 16px rgba(37, 99, 235, 0.25); }
-        .btn-primary-modern:hover { transform: translateY(-2px); box-shadow: 0 12px 20px rgba(37, 99, 235, 0.35); }
-        .btn-warning-modern { background: linear-gradient(135deg, var(--warning), #fbbf24); color: #78350f; box-shadow: 0 8px 16px rgba(245, 158, 11, 0.25); }
-        .btn-warning-modern:hover { transform: translateY(-2px); box-shadow: 0 12px 20px rgba(245, 158, 11, 0.35); }
-        .btn-success-modern { background: linear-gradient(135deg, var(--success), #34d399); color: white; box-shadow: 0 8px 16px rgba(16, 185, 129, 0.25); }
-        .btn-modern:disabled { opacity: 0.7; cursor: not-allowed; transform: none; box-shadow: none; }
-        .status-container { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px 0; }
-        .progress-ring { position: relative; width: 160px; height: 160px; margin-bottom: 20px; }
-        .progress-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
-        .progress-ring circle { fill: none; stroke-width: 12; stroke-linecap: round; }
-        .progress-ring .bg { stroke: var(--bg-body); }
-        .progress-ring .progress { stroke: var(--success); stroke-dasharray: 440; stroke-dashoffset: 440; transition: stroke-dashoffset 1.5s cubic-bezier(0.16, 1, 0.3, 1); }
-        .ring-content { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .ring-icon { font-size: 32px; color: var(--success); margin-bottom: 4px; }
-        .dash-list { list-style: none; padding: 0; }
-        .dash-item { padding: 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-        .dash-item:last-child { border-bottom: none; }
-        .mobile-toggle { display: none; font-size: 28px; cursor: pointer; color: var(--text-main); }
-        .mobile-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 999; opacity: 0; transition: opacity 0.3s ease; }
-        .mobile-overlay.show { opacity: 1; pointer-events: auto; }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Kanit', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .sidebar {
+            width: 280px;
+            background-color: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-right: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: var(--shadow-card);
+            display: flex;
+            flex-direction: column;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            padding: 32px 24px 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary), #60a5fa);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            box-shadow: 0 8px 16px rgba(37, 99, 235, 0.2);
+        }
+
+        .logo-text {
+            font-size: 18px;
+            font-weight: 700;
+            line-height: 1.2;
+            color: var(--text-main);
+        }
+
+        .logo-sub {
+            font-size: 12px;
+            font-weight: 400;
+            color: var(--text-muted);
+        }
+
+        .nav-menu {
+            list-style: none;
+            padding: 16px;
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+
+        .nav-item {
+            padding: 14px 20px;
+            margin-bottom: 8px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            color: var(--text-muted);
+            font-weight: 500;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item i {
+            font-size: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-item:hover {
+            background-color: var(--bg-body);
+            color: var(--primary);
+        }
+
+        .nav-item:hover i {
+            transform: scale(1.1);
+        }
+
+        .nav-item.active {
+            background-color: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .topbar {
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+            background-color: rgba(248, 250, 252, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 10;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin: 0;
+            letter-spacing: -0.5px;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: white;
+            padding: 6px 16px 6px 6px;
+            border-radius: 50px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+        }
+
+        .content-area {
+            padding: 0 32px 32px;
+            overflow-y: auto;
+            flex-grow: 1;
+            scroll-behavior: smooth;
+        }
+
+        .content-area::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .content-area::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .content-area::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        .view-section {
+            display: none;
+            animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .view-section.active {
+            display: block;
+        }
+
+        @keyframes slideUpFade {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .glass-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-xl);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            box-shadow: var(--shadow-card);
+            padding: 32px;
+            margin-bottom: 24px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08);
+        }
+
+        .card-title-modern {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .icon-box {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .icon-box.primary {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .icon-box.warning {
+            background: var(--warning-light);
+            color: var(--warning);
+        }
+
+        .icon-box.danger {
+            background: var(--danger-light);
+            color: var(--danger);
+        }
+
+        .icon-box.success {
+            background: var(--success-light);
+            color: var(--success);
+        }
+
+        .form-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .form-control,
+        .form-select {
+            background-color: var(--bg-body);
+            border: 1px solid transparent;
+            border-radius: var(--radius-md);
+            padding: 12px 16px;
+            font-size: 15px;
+            color: var(--text-main);
+            transition: all 0.3s ease;
+            box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.02);
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            background-color: white;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px var(--primary-light);
+            outline: none;
+        }
+
+        .table-modern {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 8px;
+        }
+
+        .table-modern th {
+            font-weight: 500;
+            color: var(--text-muted);
+            font-size: 14px;
+            padding: 0 16px 8px;
+            border: none;
+        }
+
+        .table-modern td {
+            background: white;
+            padding: 16px;
+            vertical-align: middle;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .table-modern td:first-child {
+            border-left: 1px solid var(--border);
+            border-radius: var(--radius-md) 0 0 var(--radius-md);
+            font-weight: 500;
+        }
+
+        .table-modern td:last-child {
+            border-right: 1px solid var(--border);
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
+        }
+
+        .segmented-control {
+            display: inline-flex;
+            background-color: var(--bg-body);
+            border-radius: 50px;
+            padding: 4px;
+            position: relative;
+        }
+
+        .segmented-control input {
+            display: none;
+        }
+
+        .segmented-control label {
+            padding: 6px 20px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .segmented-control input[value="ปกติ"]:checked+label {
+            background-color: var(--success);
+            color: white;
+            box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
+        }
+
+        .segmented-control input[value="แก้ไข"]:checked+label {
+            background-color: var(--danger);
+            color: white;
+            box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-modern {
+            padding: 14px 28px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .btn-primary-modern {
+            background: linear-gradient(135deg, var(--primary), #3b82f6);
+            color: white;
+            box-shadow: 0 8px 16px rgba(37, 99, 235, 0.25);
+        }
+
+        .btn-primary-modern:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 20px rgba(37, 99, 235, 0.35);
+        }
+
+        .btn-warning-modern {
+            background: linear-gradient(135deg, var(--warning), #fbbf24);
+            color: #78350f;
+            box-shadow: 0 8px 16px rgba(245, 158, 11, 0.25);
+        }
+
+        .btn-warning-modern:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 20px rgba(245, 158, 11, 0.35);
+        }
+
+        .btn-success-modern {
+            background: linear-gradient(135deg, var(--success), #34d399);
+            color: white;
+            box-shadow: 0 8px 16px rgba(16, 185, 129, 0.25);
+        }
+
+        .btn-modern:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .status-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 0;
+        }
+
+        .progress-ring {
+            position: relative;
+            width: 160px;
+            height: 160px;
+            margin-bottom: 20px;
+        }
+
+        .progress-ring svg {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+
+        .progress-ring circle {
+            fill: none;
+            stroke-width: 12;
+            stroke-linecap: round;
+        }
+
+        .progress-ring .bg {
+            stroke: var(--bg-body);
+        }
+
+        .progress-ring .progress {
+            stroke: var(--success);
+            stroke-dasharray: 440;
+            stroke-dashoffset: 440;
+            transition: stroke-dashoffset 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .ring-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .ring-icon {
+            font-size: 32px;
+            color: var(--success);
+            margin-bottom: 4px;
+        }
+
+        .dash-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .dash-item {
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .dash-item:last-child {
+            border-bottom: none;
+        }
+
+        .mobile-toggle {
+            display: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: var(--text-main);
+        }
+
+        .mobile-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 999;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .mobile-overlay.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
         @media (max-width: 992px) {
-            .sidebar { position: fixed; left: -280px; height: 100vh; }
-            .sidebar.show { left: 0; }
-            .mobile-toggle { display: block; }
-            .mobile-overlay { display: block; pointer-events: none; }
-            .topbar { padding: 0 20px; }
-            .content-area { padding: 0 16px 20px; }
-            .glass-card { padding: 24px 20px; }
-            .table-modern thead { display: none; }
-            .table-modern td { display: block; border: none; border-bottom: 1px solid var(--bg-body); padding: 12px; }
-            .table-modern td:first-child { border-radius: var(--radius-md) var(--radius-md) 0 0; background: var(--bg-body); }
-            .table-modern td:last-child { border-radius: 0 0 var(--radius-md) var(--radius-md); border-bottom: none; }
-            .table-modern tr { display: block; border: 1px solid var(--border); border-radius: var(--radius-md); margin-bottom: 16px; background: white; }
-            .segmented-control { width: 100%; display: flex; }
-            .segmented-control label { flex: 1; justify-content: center; }
+            .sidebar {
+                position: fixed;
+                left: -280px;
+                height: 100vh;
+            }
+
+            .sidebar.show {
+                left: 0;
+            }
+
+            .mobile-toggle {
+                display: block;
+            }
+
+            .mobile-overlay {
+                display: block;
+                pointer-events: none;
+            }
+
+            .topbar {
+                padding: 0 20px;
+            }
+
+            .content-area {
+                padding: 0 16px 20px;
+            }
+
+            .glass-card {
+                padding: 24px 20px;
+            }
+
+            .table-modern thead {
+                display: none;
+            }
+
+            .table-modern td {
+                display: block;
+                border: none;
+                border-bottom: 1px solid var(--bg-body);
+                padding: 12px;
+            }
+
+            .table-modern td:first-child {
+                border-radius: var(--radius-md) var(--radius-md) 0 0;
+                background: var(--bg-body);
+            }
+
+            .table-modern td:last-child {
+                border-radius: 0 0 var(--radius-md) var(--radius-md);
+                border-bottom: none;
+            }
+
+            .table-modern tr {
+                display: block;
+                border: 1px solid var(--border);
+                border-radius: var(--radius-md);
+                margin-bottom: 16px;
+                background: white;
+            }
+
+            .segmented-control {
+                width: 100%;
+                display: flex;
+            }
+
+            .segmented-control label {
+                flex: 1;
+                justify-content: center;
+            }
         }
     </style>
 </head>
+
 <body>
 
     <!-- Mobile Overlay -->
@@ -169,7 +641,8 @@
                 <h1 class="page-title d-none d-md-block" id="pageTitle">ภาพรวม (Dashboard)</h1>
             </div>
             <div class="user-profile">
-                <img src="https://ui-avatars.com/api/?name=PEA&background=2563eb&color=fff&rounded=true" width="36" height="36" alt="Profile">
+                <img src="https://ui-avatars.com/api/?name=PEA&background=2563eb&color=fff&rounded=true" width="36"
+                    height="36" alt="Profile">
                 <div class="d-none d-md-block pe-2">
                     <div style="font-size: 14px; font-weight: 600; line-height: 1.2;">ผกร.กรย.(ก3)</div>
                     <div style="font-size: 12px; color: var(--text-muted);">เจ้าหน้าที่ตรวจสภาพ</div>
@@ -180,10 +653,12 @@
         <!-- Scrollable Content Area -->
         <div class="content-area" id="contentArea">
             <div style="height: 24px;"></div> <!-- Spacer -->
-            
+
             <!-- Connection Status -->
-            <div id="dbStatusBadge" class="mb-3 d-flex align-items-center gap-2" style="font-size: 14px; color: var(--text-muted); background: white; padding: 6px 12px; border-radius: 50px; display: inline-flex; border: 1px solid var(--border);">
-                <div style="width: 10px; height: 10px; border-radius: 50%; background: var(--danger);" id="statusIndicator"></div>
+            <div id="dbStatusBadge" class="mb-3 d-flex align-items-center gap-2"
+                style="font-size: 14px; color: var(--text-muted); background: white; padding: 6px 12px; border-radius: 50px; display: inline-flex; border: 1px solid var(--border);">
+                <div style="width: 10px; height: 10px; border-radius: 50%; background: var(--danger);"
+                    id="statusIndicator"></div>
                 <span id="statusText">ยังไม่ได้เชื่อมต่อฐานข้อมูล</span>
             </div>
 
@@ -192,8 +667,10 @@
                 <div class="row g-4">
                     <div class="col-xl-8">
                         <div class="glass-card text-center" style="position: relative; overflow: hidden;">
-                            <div style="position: absolute; top: -50px; right: -50px; width: 200px; height: 200px; background: var(--success-light); border-radius: 50%; filter: blur(50px); opacity: 0.5; z-index: 0;"></div>
-                            
+                            <div
+                                style="position: absolute; top: -50px; right: -50px; width: 200px; height: 200px; background: var(--success-light); border-radius: 50%; filter: blur(50px); opacity: 0.5; z-index: 0;">
+                            </div>
+
                             <div style="position: relative; z-index: 1;">
                                 <div class="status-container">
                                     <div class="progress-ring">
@@ -203,19 +680,22 @@
                                         </svg>
                                         <div class="ring-content">
                                             <i class="ph-fill ph-check-circle ring-icon"></i>
-                                            <div class="fw-bold" style="font-size: 20px; color: var(--text-main);">พร้อมใช้งาน</div>
+                                            <div class="fw-bold" style="font-size: 20px; color: var(--text-main);">
+                                                พร้อมใช้งาน</div>
                                         </div>
                                     </div>
                                     <h3 class="fw-bold mb-2">สถานะยานพาหนะ</h3>
                                     <p class="text-muted mb-4" id="dashTitleText">ข้อมูลอัปเดตล่าสุดของวันนี้</p>
-                                    
+
                                     <div class="d-flex justify-content-center gap-2 flex-wrap">
-                                        <select id="dashMode" class="form-select" style="max-width: 120px;" onchange="toggleDashMode()">
+                                        <select id="dashMode" class="form-select" style="max-width: 120px;"
+                                            onchange="toggleDashMode()">
                                             <option value="daily">รายวัน</option>
                                             <option value="monthly">รายเดือน</option>
                                         </select>
                                         <input type="date" id="dashDate" class="form-control" style="max-width: 150px;">
-                                        <input type="month" id="dashMonth" class="form-control d-none" style="max-width: 150px;">
+                                        <input type="month" id="dashMonth" class="form-control d-none"
+                                            style="max-width: 150px;">
                                         <button class="btn-modern btn-primary-modern" onclick="loadDashboard()">
                                             <i class="ph ph-arrows-clockwise"></i> อัปเดต
                                         </button>
@@ -223,7 +703,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="glass-card">
                             <div class="card-title-modern">
                                 <div class="icon-box primary"><i class="ph ph-list-checks"></i></div>
@@ -231,15 +711,26 @@
                             </div>
                             <div class="table-responsive">
                                 <table class="table-modern w-100">
-                                    <thead><tr><th>ทะเบียนรถ</th><th>วันที่ตรวจล่าสุด</th><th>สถานะตัวรถ</th><th>สถานะเครน</th><th>ผู้ตรวจสอบล่าสุด</th><th class="text-center">รายละเอียด</th></tr></thead>
+                                    <thead>
+                                        <tr>
+                                            <th>ทะเบียนรถ</th>
+                                            <th>วันที่ตรวจล่าสุด</th>
+                                            <th>สถานะตัวรถ</th>
+                                            <th>สถานะเครน</th>
+                                            <th>ผู้ตรวจสอบล่าสุด</th>
+                                            <th class="text-center">รายละเอียด</th>
+                                        </tr>
+                                    </thead>
                                     <tbody id="dashIssueBody">
-                                        <tr><td colspan="6" class="text-center text-muted py-4">รอโหลดข้อมูล...</td></tr>
+                                        <tr>
+                                            <td colspan="6" class="text-center text-muted py-4">รอโหลดข้อมูล...</td>
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="col-xl-4">
                         <div class="glass-card h-100">
                             <div class="card-title-modern">
@@ -261,7 +752,7 @@
                         <div class="icon-box primary"><i class="ph ph-car"></i></div>
                         <span>แบบฟอร์มตรวจสอบรถยนต์</span>
                     </div>
-                    
+
                     <form id="vehicleChecklistForm" onsubmit="submitForm(event, 'รถยนต์')">
                         <div class="row g-4 mb-5">
                             <div class="col-md-3">
@@ -274,7 +765,8 @@
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label">วันที่ตรวจสอบ</label>
-                                <input type="date" class="form-control" name="checkDate" id="vCheckDate" readonly required>
+                                <input type="date" class="form-control" name="checkDate" id="vCheckDate" readonly
+                                    required>
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label">สภาพการใช้งาน</label>
@@ -298,17 +790,23 @@
                                 <tbody id="vehicleChecklistBody"></tbody>
                             </table>
                         </div>
-                        
-                        <div class="mb-4 p-3 rounded" style="background-color: var(--primary-light); border-left: 4px solid var(--primary);">
+
+                        <div class="mb-4 p-3 rounded"
+                            style="background-color: var(--primary-light); border-left: 4px solid var(--primary);">
                             <div class="form-check d-flex align-items-center">
-                                <input class="form-check-input" type="checkbox" id="vAcknowledge" required style="width: 20px; height: 20px; border-color: var(--primary); flex-shrink: 0;">
-                                <label class="form-check-label ms-3" for="vAcknowledge" style="font-size: 15px; color: var(--text-main); font-weight: 500;">
-                                    ข้าพเจ้าได้ตรวจสอบสภาพรถและมีใบอนุญาตขับขี่ถูกต้องตาม <a href="#" onclick="switchView('regulations')" class="text-primary fw-bold text-decoration-none">ระเบียบ กฟภ. พ.ศ. 2565</a>
+                                <input class="form-check-input" type="checkbox" id="vAcknowledge" required
+                                    style="width: 20px; height: 20px; border-color: var(--primary); flex-shrink: 0;">
+                                <label class="form-check-label ms-3" for="vAcknowledge"
+                                    style="font-size: 15px; color: var(--text-main); font-weight: 500;">
+                                    ข้าพเจ้าได้ตรวจสอบสภาพรถและมีใบอนุญาตขับขี่ถูกต้องตาม <a href="#"
+                                        onclick="switchView('regulations')"
+                                        class="text-primary fw-bold text-decoration-none">ระเบียบ กฟภ. พ.ศ. 2565</a>
                                 </label>
                             </div>
                         </div>
                         <div class="text-center mt-3">
-                            <button type="submit" class="btn-modern btn-primary-modern w-100" style="max-width: 400px;" id="btnSubmitVehicle">
+                            <button type="submit" class="btn-modern btn-primary-modern w-100" style="max-width: 400px;"
+                                id="btnSubmitVehicle">
                                 <i class="ph ph-paper-plane-tilt fs-5"></i> บันทึกลงฐานข้อมูล
                             </button>
                         </div>
@@ -323,7 +821,7 @@
                         <div class="icon-box warning"><i class="ph ph-truck"></i></div>
                         <span>แบบฟอร์มตรวจสอบเครนไฮดรอลิค</span>
                     </div>
-                    
+
                     <form id="craneChecklistForm" onsubmit="submitForm(event, 'เครนไฮดรอลิค')">
                         <div class="row g-4 mb-5">
                             <div class="col-md-3">
@@ -336,7 +834,8 @@
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label">วันที่ตรวจสอบ</label>
-                                <input type="date" class="form-control" name="checkDate" id="cCheckDate" readonly required>
+                                <input type="date" class="form-control" name="checkDate" id="cCheckDate" readonly
+                                    required>
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label">สภาพการใช้งาน</label>
@@ -360,17 +859,23 @@
                                 <tbody id="craneChecklistBody"></tbody>
                             </table>
                         </div>
-                        
-                        <div class="mb-4 p-3 rounded" style="background-color: var(--warning-light); border-left: 4px solid var(--warning);">
+
+                        <div class="mb-4 p-3 rounded"
+                            style="background-color: var(--warning-light); border-left: 4px solid var(--warning);">
                             <div class="form-check d-flex align-items-center">
-                                <input class="form-check-input" type="checkbox" id="cAcknowledge" required style="width: 20px; height: 20px; border-color: var(--warning); flex-shrink: 0;">
-                                <label class="form-check-label ms-3" for="cAcknowledge" style="font-size: 15px; color: var(--text-main); font-weight: 500;">
-                                    ข้าพเจ้าได้ตรวจสอบสภาพเครนและมีใบอนุญาตขับขี่ถูกต้องตาม <a href="#" onclick="switchView('regulations')" class="text-primary fw-bold text-decoration-none">ระเบียบ กฟภ. พ.ศ. 2565</a>
+                                <input class="form-check-input" type="checkbox" id="cAcknowledge" required
+                                    style="width: 20px; height: 20px; border-color: var(--warning); flex-shrink: 0;">
+                                <label class="form-check-label ms-3" for="cAcknowledge"
+                                    style="font-size: 15px; color: var(--text-main); font-weight: 500;">
+                                    ข้าพเจ้าได้ตรวจสอบสภาพเครนและมีใบอนุญาตขับขี่ถูกต้องตาม <a href="#"
+                                        onclick="switchView('regulations')"
+                                        class="text-primary fw-bold text-decoration-none">ระเบียบ กฟภ. พ.ศ. 2565</a>
                                 </label>
                             </div>
                         </div>
                         <div class="text-center mt-3">
-                            <button type="submit" class="btn-modern btn-warning-modern w-100" style="max-width: 400px;" id="btnSubmitCrane">
+                            <button type="submit" class="btn-modern btn-warning-modern w-100" style="max-width: 400px;"
+                                id="btnSubmitCrane">
                                 <i class="ph ph-paper-plane-tilt fs-5"></i> บันทึกลงฐานข้อมูล
                             </button>
                         </div>
@@ -385,24 +890,28 @@
                         <div class="icon-box success"><i class="ph ph-line-logo"></i></div>
                         <span>สร้างข้อความรายงาน (คัดลอกส่ง LINE)</span>
                     </div>
-                    
+
                     <div class="mb-4">
                         <label class="form-label">เลือกรถที่ตรวจล่าสุดจากฐานข้อมูล</label>
-                        <select id="recordSelect" class="form-select" style="font-size: 16px; padding: 14px;" onchange="generateText()">
+                        <select id="recordSelect" class="form-select" style="font-size: 16px; padding: 14px;"
+                            onchange="generateText()">
                             <option value="">-- กดเพื่อโหลดรายการ... --</option>
                         </select>
                     </div>
 
-                    <textarea id="outputText" class="form-control" rows="12" style="resize: none; font-family: monospace; padding: 20px;" placeholder="ข้อความรายงานจะปรากฏที่นี่..."></textarea>
-                    
+                    <textarea id="outputText" class="form-control" rows="12"
+                        style="resize: none; font-family: monospace; padding: 20px;"
+                        placeholder="ข้อความรายงานจะปรากฏที่นี่..."></textarea>
+
                     <div class="text-center mt-4">
-                        <button class="btn-modern btn-success-modern w-100" style="max-width: 400px;" onclick="copyToClipboard()">
+                        <button class="btn-modern btn-success-modern w-100" style="max-width: 400px;"
+                            onclick="copyToClipboard()">
                             <i class="ph ph-copy fs-5"></i> คัดลอกข้อความ
                         </button>
                     </div>
                 </div>
             </div>
-            
+
             <!-- ================= Regulations View ================= -->
             <div id="regulations" class="view-section">
                 <div class="row g-4">
@@ -412,61 +921,86 @@
                                 <div class="icon-box success"><i class="ph ph-check-circle"></i></div>
                                 <span class="text-success">สิ่งที่ต้องปฏิบัติ (Do's)</span>
                             </div>
-                            <ul class="list-group list-group-flush bg-transparent" style="list-style: none; padding: 0;">
+                            <ul class="list-group list-group-flush bg-transparent"
+                                style="list-style: none; padding: 0;">
                                 <li class="mb-3">
-                                    <div class="fw-bold text-dark d-flex align-items-center"><i class="ph ph-identification-card fs-4 text-primary me-2"></i>การขับขี่</div>
-                                    <div class="text-muted ms-4">ต้องมีใบอนุญาตขับขี่ตรงตามประเภทรถ, ปฏิบัติตามกฎจราจรและป้ายเตือนอย่างเคร่งครัด</div>
+                                    <div class="fw-bold text-dark d-flex align-items-center"><i
+                                            class="ph ph-identification-card fs-4 text-primary me-2"></i>การขับขี่</div>
+                                    <div class="text-muted ms-4">ต้องมีใบอนุญาตขับขี่ตรงตามประเภทรถ,
+                                        ปฏิบัติตามกฎจราจรและป้ายเตือนอย่างเคร่งครัด</div>
                                 </li>
                                 <li class="mb-3">
-                                    <div class="fw-bold text-dark d-flex align-items-center"><i class="ph ph-magnifying-glass fs-4 text-primary me-2"></i>ก่อนการใช้งาน</div>
-                                    <div class="text-muted ms-4">ต้องตรวจสอบสภาพรถก่อนและหลังใช้งานทุกครั้ง หากพบชำรุดต้องรายงานทันที</div>
+                                    <div class="fw-bold text-dark d-flex align-items-center"><i
+                                            class="ph ph-magnifying-glass fs-4 text-primary me-2"></i>ก่อนการใช้งาน
+                                    </div>
+                                    <div class="text-muted ms-4">ต้องตรวจสอบสภาพรถก่อนและหลังใช้งานทุกครั้ง
+                                        หากพบชำรุดต้องรายงานทันที</div>
                                 </li>
                                 <li class="mb-3">
-                                    <div class="fw-bold text-dark d-flex align-items-center"><i class="ph ph-parking fs-4 text-primary me-2"></i>การจอดรถ</div>
-                                    <div class="text-muted ms-4">ต้องดับเครื่องยนต์ ปลดเกียร์ว่าง ดึงเบรกมือ (ถ้ารถจอดบนทางลาดชันต้องใช้ไม้หมอนหนุนล้อ)</div>
+                                    <div class="fw-bold text-dark d-flex align-items-center"><i
+                                            class="ph ph-parking fs-4 text-primary me-2"></i>การจอดรถ</div>
+                                    <div class="text-muted ms-4">ต้องดับเครื่องยนต์ ปลดเกียร์ว่าง ดึงเบรกมือ
+                                        (ถ้ารถจอดบนทางลาดชันต้องใช้ไม้หมอนหนุนล้อ)</div>
                                 </li>
                                 <li class="mb-3">
-                                    <div class="fw-bold text-dark d-flex align-items-center"><i class="ph ph-package fs-4 text-primary me-2"></i>การบรรทุก</div>
-                                    <div class="text-muted ms-4">ต้องใช้รัดเต๊าะหรือเชือกรัดให้แน่นหนา หากมีสิ่งของยื่นเกินตัวรถต้องติดธงสีแดง (กลางวัน) หรือไฟสีแดง (กลางคืน)</div>
+                                    <div class="fw-bold text-dark d-flex align-items-center"><i
+                                            class="ph ph-package fs-4 text-primary me-2"></i>การบรรทุก</div>
+                                    <div class="text-muted ms-4">ต้องใช้รัดเต๊าะหรือเชือกรัดให้แน่นหนา
+                                        หากมีสิ่งของยื่นเกินตัวรถต้องติดธงสีแดง (กลางวัน) หรือไฟสีแดง (กลางคืน)</div>
                                 </li>
                                 <li class="mb-3">
-                                    <div class="fw-bold text-dark d-flex align-items-center"><i class="ph ph-warning-octagon fs-4 text-primary me-2"></i>เมื่อเกิดอุบัติเหตุ</div>
-                                    <div class="text-muted ms-4">ต้องแจ้งตำรวจ, ถ่ายภาพเป็นหลักฐาน, และรายงานผู้บังคับบัญชาทันที</div>
+                                    <div class="fw-bold text-dark d-flex align-items-center"><i
+                                            class="ph ph-warning-octagon fs-4 text-primary me-2"></i>เมื่อเกิดอุบัติเหตุ
+                                    </div>
+                                    <div class="text-muted ms-4">ต้องแจ้งตำรวจ, ถ่ายภาพเป็นหลักฐาน,
+                                        และรายงานผู้บังคับบัญชาทันที</div>
                                 </li>
                                 <li class="mb-3">
-                                    <div class="fw-bold text-dark d-flex align-items-center"><i class="ph ph-waves fs-4 text-primary me-2"></i>การขับลุยน้ำ</div>
-                                    <div class="text-muted ms-4">ให้ปิดแอร์ก่อนลุยน้ำ เมื่อผ่านจุดที่น้ำท่วมแล้วให้ทดสอบเบรกและตรวจเช็คของเหลว</div>
+                                    <div class="fw-bold text-dark d-flex align-items-center"><i
+                                            class="ph ph-waves fs-4 text-primary me-2"></i>การขับลุยน้ำ</div>
+                                    <div class="text-muted ms-4">ให้ปิดแอร์ก่อนลุยน้ำ
+                                        เมื่อผ่านจุดที่น้ำท่วมแล้วให้ทดสอบเบรกและตรวจเช็คของเหลว</div>
                                 </li>
                             </ul>
                         </div>
                     </div>
-                    
+
                     <div class="col-xl-6">
                         <div class="glass-card h-100" style="border-top: 4px solid var(--danger);">
                             <div class="card-title-modern">
                                 <div class="icon-box danger"><i class="ph ph-x-circle"></i></div>
                                 <span class="text-danger">สิ่งที่ห้ามทำ (Don'ts)</span>
                             </div>
-                            <ul class="list-group list-group-flush bg-transparent" style="list-style: none; padding: 0;">
+                            <ul class="list-group list-group-flush bg-transparent"
+                                style="list-style: none; padding: 0;">
                                 <li class="mb-3">
-                                    <div class="fw-bold text-dark d-flex align-items-center"><i class="ph ph-users fs-4 text-danger me-2"></i>ห้ามบุคคลภายนอก</div>
-                                    <div class="text-muted ms-4">ห้ามให้บุคคลภายนอกที่ไม่ได้รับอนุญาต หรือพนักงานที่ไม่มีหน้าที่ ขึ้นขับขี่หรือโดยสารยานพาหนะของ กฟภ. เด็ดขาด</div>
+                                    <div class="fw-bold text-dark d-flex align-items-center"><i
+                                            class="ph ph-users fs-4 text-danger me-2"></i>ห้ามบุคคลภายนอก</div>
+                                    <div class="text-muted ms-4">ห้ามให้บุคคลภายนอกที่ไม่ได้รับอนุญาต
+                                        หรือพนักงานที่ไม่มีหน้าที่ ขึ้นขับขี่หรือโดยสารยานพาหนะของ กฟภ. เด็ดขาด</div>
                                 </li>
                                 <li class="mb-3">
-                                    <div class="fw-bold text-dark d-flex align-items-center"><i class="ph ph-key fs-4 text-danger me-2"></i>ห้ามทิ้งกุญแจ</div>
+                                    <div class="fw-bold text-dark d-flex align-items-center"><i
+                                            class="ph ph-key fs-4 text-danger me-2"></i>ห้ามทิ้งกุญแจ</div>
                                     <div class="text-muted ms-4">ห้ามทิ้งกุญแจไว้ที่ยานพาหนะเมื่อจอดรถทิ้งไว้</div>
                                 </li>
                                 <li class="mb-3">
-                                    <div class="fw-bold text-dark d-flex align-items-center"><i class="ph ph-scales fs-4 text-danger me-2"></i>ห้ามบรรทุกเกินพิกัด</div>
+                                    <div class="fw-bold text-dark d-flex align-items-center"><i
+                                            class="ph ph-scales fs-4 text-danger me-2"></i>ห้ามบรรทุกเกินพิกัด</div>
                                     <div class="text-muted ms-4">ห้ามบรรทุกน้ำหนักเกินพิกัดที่กำหนด</div>
                                 </li>
                                 <li class="mb-3">
-                                    <div class="fw-bold text-dark d-flex align-items-center"><i class="ph ph-arrow-line-up fs-4 text-danger me-2"></i>ห้ามบรรทุกสูงเกิน</div>
-                                    <div class="text-muted ms-4">ห้ามบรรทุกสิ่งของสูงเกิน 3.00 เมตรจากพื้นทาง (หรือเกิน 3.80 เมตรสำหรับรถบรรทุกกว้าง 2.30 เมตรขึ้นไป)</div>
+                                    <div class="fw-bold text-dark d-flex align-items-center"><i
+                                            class="ph ph-arrow-line-up fs-4 text-danger me-2"></i>ห้ามบรรทุกสูงเกิน
+                                    </div>
+                                    <div class="text-muted ms-4">ห้ามบรรทุกสิ่งของสูงเกิน 3.00 เมตรจากพื้นทาง (หรือเกิน
+                                        3.80 เมตรสำหรับรถบรรทุกกว้าง 2.30 เมตรขึ้นไป)</div>
                                 </li>
                                 <li class="mb-3">
-                                    <div class="fw-bold text-dark d-flex align-items-center"><i class="ph ph-wrench fs-4 text-danger me-2"></i>ห้ามดัดแปลงรถ</div>
-                                    <div class="text-muted ms-4">ห้ามดัดแปลงสภาพรถ หรือแก้ไขหมายเลขรหัสประจำรถโดยไม่ได้รับอนุญาต</div>
+                                    <div class="fw-bold text-dark d-flex align-items-center"><i
+                                            class="ph ph-wrench fs-4 text-danger me-2"></i>ห้ามดัดแปลงรถ</div>
+                                    <div class="text-muted ms-4">ห้ามดัดแปลงสภาพรถ
+                                        หรือแก้ไขหมายเลขรหัสประจำรถโดยไม่ได้รับอนุญาต</div>
                                 </li>
                             </ul>
                         </div>
@@ -482,18 +1016,18 @@
         try {
             // --- ข้อมูลพื้นฐานสำหรับแสดงผล ---
             const vehicleChecklist = [
-                "ตรวจบันทึกประวัติต่างๆ", "แผนการบำรุงรักษา", "การต่อทะเบียน/ป้าย", "ความสะอาดห้องเครื่อง", 
-                "รอยรั่วน้ำมันต่างๆ", "สายพาน หม้อน้ำ พัดลม", "ระดับน้ำมันเครื่อง", "เกียร์", "ครัช", "เบรก", 
+                "ตรวจบันทึกประวัติต่างๆ", "แผนการบำรุงรักษา", "การต่อทะเบียน/ป้าย", "ความสะอาดห้องเครื่อง",
+                "รอยรั่วน้ำมันต่างๆ", "สายพาน หม้อน้ำ พัดลม", "ระดับน้ำมันเครื่อง", "เกียร์", "ครัช", "เบรก",
                 "แสงสว่าง", "สัญญาณแตร/ไฟเลี้ยว", "ไฟท้าย/เบรก", "แบตเตอรี่", "ปัดน้ำฝน", "เครื่องปรับอากาศ",
                 "ระยะฟรีพวงมาลัย", "การทำงานเบรคมือ", "ตัวถัง/สี", "กระบะบรรทุก", "เบาะนั่ง", "สภาพล้อและยางรถยนต์"
             ];
-            
+
             const craneChecklist = [
                 "ระบบคอนโทรล", "เกียร์ฝาก (PTO)", "ปั๊มไฮดรอลิค", "สายไฮดรอลิค", "น้ำมันไฮดรอลิค",
                 "กระบอกหมุนเครน", "เสาเครน/ลูกปืน", "กระบอกขาค้ำยัน", "กระบอกยกบูม", "กระบอกยืดหด",
                 "ชุดวิ้นซ์-เบรควิ้นซ์", "ลวดสลิง", "รอก", "หัวเจาะ", "ฮุก/เซฟตี้ล็อค", "ไฟสัญญาณเตือน"
             ];
-            
+
             let masterCars = [
                 { plate: "55-0774 กทม.", driver: "นายเสนาะ ดาวเรือง" },
                 { plate: "84-1643 นฐ", driver: "นายณัฐพล พืชพันธ์" },
@@ -520,24 +1054,24 @@
                 { plate: "89-6967 นฐ", driver: "นายผดุงเกียรติ ศรีใส" },
                 { plate: "90-1842 นฐ", driver: "นายอุดมศักดิ์ จันทร์กลิ่น" }
             ];
-            
+
             let masterInspectors = [
-                "นายขวัญเรือน มีถาวร", "นายฉลองชัย ปานเรือง", "นายณัฐพล พืชพันธ์", 
-                "นายธวัชชัย โต๊ะศรีสุข", "นายพงษ์พันธ์ จุติโรจนปกรณ์", "นายผดุงเกียรติ ศรีใส", 
-                "นายไพฑูรย์ สุขสมบัติ", "นายมานิตย์ ใจชื้น", "นายศราวุฒิ เกิดสีเล็ก", 
-                "นายเสนาะ ดาวเรือง", "นายโหนก แก้วบัวดี", "นายอุดมศักดิ์ จันทร์กลิ่น", 
-                "นายอุเทน นามศร", "นายวิสูตร เสือคล้าย", "นายวีรพัฒน์ นาคลมัย", 
-                "นายศุภวิชญ์ เกาะลอย", "นายอนิวัติ จุลมูล", "นายอินทพร สร้อยสังวาลย์", 
+                "นายขวัญเรือน มีถาวร", "นายฉลองชัย ปานเรือง", "นายณัฐพล พืชพันธ์",
+                "นายธวัชชัย โต๊ะศรีสุข", "นายพงษ์พันธ์ จุติโรจนปกรณ์", "นายผดุงเกียรติ ศรีใส",
+                "นายไพฑูรย์ สุขสมบัติ", "นายมานิตย์ ใจชื้น", "นายศราวุฒิ เกิดสีเล็ก",
+                "นายเสนาะ ดาวเรือง", "นายโหนก แก้วบัวดี", "นายอุดมศักดิ์ จันทร์กลิ่น",
+                "นายอุเทน นามศร", "นายวิสูตร เสือคล้าย", "นายวีรพัฒน์ นาคลมัย",
+                "นายศุภวิชญ์ เกาะลอย", "นายอนิวัติ จุลมูล", "นายอินทพร สร้อยสังวาลย์",
                 "นายกิตติภัฏ กาฬษร"
             ];
-            
+
             // --- การตั้งค่า Supabase ---
             let supabase = null;
             const SUPABASE_URL_KEY = 'C3_SUPABASE_URL';
             const SUPABASE_ANON_KEY = 'C3_SUPABASE_KEY';
-            
+
             function initSupabase() {
-                const hardcodedUrl = "https://imxqmofvoklxgjwsgvvq.supabase.co"; 
+                const hardcodedUrl = "https://imxqmofvoklxgjwsgvvq.supabase.co";
                 const hardcodedKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlteHFtb2Z2b2tseGdqd3NndnZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ1NDk4NTgsImV4cCI6MjEwMDEyNTg1OH0.BFs6cW9NqaSlujhWu5QJOZL_N8GycXQpiVsqp1lV0vM";
 
                 let url = hardcodedUrl;
@@ -548,7 +1082,7 @@
                 } catch (e) {
                     console.warn("localStorage is not available, using hardcoded fallback.");
                 }
-                
+
                 if (url && key) {
                     if (typeof window.supabase === 'undefined') {
                         updateConnectionStatus(false);
@@ -568,19 +1102,19 @@
                     loadDashboardOffline();
                 }
             }
-            
+
             function loadDashboardOffline() {
                 const issueBody = document.getElementById('dashIssueBody');
                 const missingList = document.getElementById('dashMissingList');
                 issueBody.innerHTML = `<tr><td colspan="6" class="text-center py-5"><h5 class="fw-bold text-dark">โหมดออฟไลน์</h5><p class="text-muted mb-0">กรุณาตั้งค่าฐานข้อมูลเพื่อดูรายงาน</p></td></tr>`;
-                
+
                 missingList.innerHTML = '';
                 masterCars.forEach(car => {
                     missingList.innerHTML += `<div class="dash-item"><div class="d-flex flex-column"><span class="fw-bold text-dark">${car.plate}</span><span class="text-muted" style="font-size: 13px">${car.driver || 'ไม่ระบุคนขับ'}</span></div><span class="badge" style="background: var(--warning-light); color: var(--warning); padding: 6px 10px; border-radius: 6px;">รอตรวจ</span></div>`;
                 });
                 setProgressRing(0);
             }
-            
+
             function updateConnectionStatus(isConnected) {
                 const indicator = document.getElementById('statusIndicator');
                 const text = document.getElementById('statusText');
@@ -592,7 +1126,7 @@
                     text.innerText = 'ทำงานแบบออฟไลน์ (โปรดไปที่เมนูตั้งค่าฐานข้อมูล)';
                 }
             }
-            
+
             function saveSupabaseSettings(e) {
                 e.preventDefault();
                 const url = document.getElementById('supaUrl').value.trim();
@@ -604,7 +1138,7 @@
                     console.warn("localStorage is not available for saving.");
                 }
                 initSupabase();
-                if(Toast) {
+                if (Toast) {
                     Toast.fire({
                         icon: 'success',
                         title: 'บันทึกการตั้งค่าสำเร็จ'
@@ -614,7 +1148,7 @@
                     switchView('dashboard');
                 }
             }
-            
+
             async function fetchMasterData() {
                 if (!supabase) return;
                 try {
@@ -626,7 +1160,7 @@
                         }
                         masterCars.sort((a, b) => a.plate.localeCompare(b.plate, 'th'));
                     }
-                    
+
                     const { data: insp, error: err2 } = await supabase.from('inspectors').select('*');
                     if (!err2 && insp && insp.length > 0) {
                         masterInspectors = insp.map(i => i.full_name);
@@ -635,14 +1169,14 @@
                         }
                         masterInspectors.sort((a, b) => a.localeCompare(b, 'th'));
                     }
-                    
+
                     populateDropdowns();
                     loadDashboard();
                 } catch (error) {
                     console.error(error);
                 }
             }
-            
+
             let Toast = null;
             try {
                 if (typeof Swal !== 'undefined') {
@@ -654,8 +1188,8 @@
                         }
                     });
                 }
-            } catch (e) {}
-            
+            } catch (e) { }
+
             window.onload = () => {
                 renderChecklist('vehicleChecklistBody', vehicleChecklist, 'v');
                 renderChecklist('craneChecklistBody', craneChecklist, 'c');
@@ -666,13 +1200,13 @@
                 setTimeout(() => setProgressRing(100), 500);
                 initSupabase();
             };
-            
+
             function populateDropdowns() {
                 let plateHtml = '<option value="">-- เลือกทะเบียน --</option>';
                 masterCars.forEach(car => plateHtml += `<option value="${car.plate}">${car.plate}</option>`);
                 plateHtml += '<option value="อื่นๆ">อื่นๆ</option>';
                 document.getElementById('vPlate').innerHTML = plateHtml;
-                
+
                 const noCranePlates = ["90-1844 นฐ", "89-5769 นฐ", "90-1845 นฐ", "90-1842 นฐ", "90-1843 นฐ"];
                 let cranePlateHtml = '<option value="">-- เลือกทะเบียน --</option>';
                 masterCars.forEach(car => {
@@ -682,26 +1216,26 @@
                 });
                 cranePlateHtml += '<option value="อื่นๆ">อื่นๆ</option>';
                 document.getElementById('cPlate').innerHTML = cranePlateHtml;
-            
+
                 let inspHtml = '<option value="">-- เลือกผู้ตรวจ --</option>';
                 masterInspectors.forEach(n => inspHtml += `<option value="${n}">${n}</option>`);
                 document.getElementById('vInspector').innerHTML = inspHtml;
                 document.getElementById('cInspector').innerHTML = inspHtml;
             }
-            
-            window.switchView = function(viewId) {
+
+            window.switchView = function (viewId) {
                 try {
                     document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
                     document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-                    
+
                     document.getElementById(viewId).classList.add('active');
-                    
+
                     document.querySelectorAll('.nav-item').forEach(el => {
-                        if(el.getAttribute('onclick') && el.getAttribute('onclick').includes(viewId)) {
+                        if (el.getAttribute('onclick') && el.getAttribute('onclick').includes(viewId)) {
                             el.classList.add('active');
                         }
                     });
-                    
+
                     let titleMap = {
                         'dashboard': 'ภาพรวม (Dashboard)',
                         'vehicle-form': 'ตรวจรถยนต์',
@@ -711,25 +1245,25 @@
                         'settings': 'ตั้งค่าระบบ'
                     };
                     document.getElementById('pageTitle').innerText = titleMap[viewId];
-                    
-                    if(window.innerWidth <= 992) toggleSidebar();
-                    if(viewId === 'summary') loadSummaryData();
-                    if(viewId === 'dashboard') {
-                        if(supabase) loadDashboard();
+
+                    if (window.innerWidth <= 992) toggleSidebar();
+                    if (viewId === 'summary') loadSummaryData();
+                    if (viewId === 'dashboard') {
+                        if (supabase) loadDashboard();
                         else loadDashboardOffline();
                     }
-                    
+
                     document.getElementById('contentArea').scrollTo({ top: 0, behavior: 'smooth' });
-                } catch(e) {
+                } catch (e) {
                     alert("Error in switchView: " + e.message);
                 }
             };
-            
-            window.toggleSidebar = function() {
+
+            window.toggleSidebar = function () {
                 document.getElementById('sidebar').classList.toggle('show');
                 document.getElementById('mobileOverlay').classList.toggle('show');
             };
-            
+
             function renderChecklist(containerId, items, prefix) {
                 const tbody = document.getElementById(containerId);
                 let html = '';
@@ -750,8 +1284,8 @@
                 });
                 tbody.innerHTML = html;
             }
-            
-            window.submitForm = async function(e, carType) {
+
+            window.submitForm = async function (e, carType) {
                 e.preventDefault();
                 if (!supabase) {
                     alert('คุณกำลังใช้งานโหมดออฟไลน์: ไม่สามารถบันทึกข้อมูลได้ กรุณาไปที่เมนูตั้งค่าและใส่ข้อมูล Supabase ก่อน');
@@ -761,20 +1295,20 @@
                 const btnId = carType === 'รถยนต์' ? 'btnSubmitVehicle' : 'btnSubmitCrane';
                 const btn = document.getElementById(btnId);
                 const originalText = btn.innerHTML;
-                
+
                 btn.disabled = true;
                 btn.innerHTML = 'กำลังบันทึกข้อมูล...';
-                
+
                 const formData = new FormData(document.getElementById(formId));
                 const dataObj = Object.fromEntries(formData.entries());
-                
+
                 let issues = [];
                 let isDefective = false;
                 if (dataObj.usageCondition === "อยู่ระหว่างเข้าซ่อม") {
                     isDefective = true;
                     issues.push("อยู่ระหว่างเข้าซ่อม");
                 }
-                
+
                 for (let key in dataObj) {
                     if (key.startsWith("status_") && dataObj[key] === "แก้ไข") {
                         const index = key.split("_")[1];
@@ -783,7 +1317,7 @@
                         isDefective = true;
                     }
                 }
-            
+
                 const payload = {
                     check_date: dataObj.checkDate,
                     plate_number: dataObj.licensePlate,
@@ -793,11 +1327,11 @@
                     issues_list: issues.join(", "),
                     raw_json: dataObj
                 };
-            
+
                 try {
                     const { error } = await supabase.from('inspections').insert([payload]);
                     if (error) throw error;
-                    if(Toast) Toast.fire({ icon: 'success', title: 'บันทึกสำเร็จ!' });
+                    if (Toast) Toast.fire({ icon: 'success', title: 'บันทึกสำเร็จ!' });
                     else alert('บันทึกสำเร็จ!');
 
                     // --- ADDED: Send LINE Notify ---
@@ -811,7 +1345,7 @@
                         };
                         
                         if (carType === 'รถยนต์') {
-                            summaryText = "\n\n🔍 สรุปจุดสำคัญ (Top 7 Checks):\n" +
+                            summaryText = "\n\n🔍 สรุปผลการตรวจสภาพรถยนต์ก่อนออกปฏิบัติงาน มีรายละเอียดดังนี้ :\n" +
                                 "1. ระบบเบรก: " + getStatus(10) + "\n" +
                                 "2. น้ำมันเครื่อง: " + getStatus(7) + "\n" +
                                 "3. รอยรั่วซึม: " + getStatus(5) + "\n" +
@@ -820,7 +1354,7 @@
                                 "6. แบตเตอรี่: " + getStatus(14) + "\n" +
                                 "7. ล้อและยาง: " + getStatus(22);
                         } else {
-                            summaryText = "\n\n🔍 สรุปจุดสำคัญ (Top 5 Checks):\n" +
+                            summaryText = "\n\n🔍 สรุปผลการตรวจสภาพเครนไฮดรอลิคก่อนปฏิบัติงาน มีรายละเอียดดังนี้ :\n" +
                                 "1. ระบบคอนโทรล: " + getStatus(1) + "\n" +
                                 "2. สาย/น้ำมันไฮดรอลิค: " + (dataObj["status_4"]==="แก้ไข"||dataObj["status_5"]==="แก้ไข" ? "❌ แก้ไข" : "✅ ปกติ") + "\n" +
                                 "3. ขาค้ำยัน: " + getStatus(8) + "\n" +
@@ -850,15 +1384,15 @@
                     btn.innerHTML = originalText;
                 }
             };
-            
+
             function setProgressRing(percent) {
                 const circle = document.getElementById('dashProgress');
-                if(!circle) return;
+                if (!circle) return;
                 const offset = 440 - (percent / 100) * 440;
                 circle.style.strokeDashoffset = offset;
-                
+
                 const icon = document.querySelector('.ring-icon');
-                if(!icon) return;
+                if (!icon) return;
                 if (percent === 100) {
                     circle.style.stroke = 'var(--success)';
                     icon.className = 'ph-fill ph-check-circle ring-icon';
@@ -873,8 +1407,8 @@
                     icon.style.color = 'var(--danger)';
                 }
             }
-            
-            window.toggleDashMode = function() {
+
+            window.toggleDashMode = function () {
                 const mode = document.getElementById('dashMode').value;
                 if (mode === 'daily') {
                     document.getElementById('dashDate').classList.remove('d-none');
@@ -886,46 +1420,46 @@
                 loadDashboard();
             }
 
-            window.loadDashboard = async function() {
+            window.loadDashboard = async function () {
                 if (!supabase) return;
                 const mode = document.getElementById('dashMode') ? document.getElementById('dashMode').value : 'daily';
                 const dateVal = document.getElementById('dashDate').value;
                 const monthVal = document.getElementById('dashMonth') ? document.getElementById('dashMonth').value : '';
-                
+
                 const issueBody = document.getElementById('dashIssueBody');
                 const missingList = document.getElementById('dashMissingList');
-                
+
                 issueBody.innerHTML = '<tr><td colspan="6" class="text-center py-4">กำลังโหลด...</td></tr>';
                 missingList.innerHTML = '<div class="text-center py-4">กำลังโหลด...</div>';
-                
+
                 try {
                     let query = supabase.from('inspections').select('*');
-                    
+
                     if (mode === 'daily') {
                         query = query.eq('check_date', dateVal);
-                        if(document.getElementById('dashTitleText')) document.getElementById('dashTitleText').innerText = 'ข้อมูลอัปเดตล่าสุดของวันนี้';
-                        if(document.getElementById('dashInspectedTitle')) document.getElementById('dashInspectedTitle').innerText = 'รายการรถที่ตรวจสอบแล้ววันนี้';
-                        if(document.getElementById('dashMissingTitle')) document.getElementById('dashMissingTitle').innerText = 'ยังไม่ส่งตรวจวันนี้';
+                        if (document.getElementById('dashTitleText')) document.getElementById('dashTitleText').innerText = 'ข้อมูลอัปเดตล่าสุดของวันนี้';
+                        if (document.getElementById('dashInspectedTitle')) document.getElementById('dashInspectedTitle').innerText = 'รายการรถที่ตรวจสอบแล้ววันนี้';
+                        if (document.getElementById('dashMissingTitle')) document.getElementById('dashMissingTitle').innerText = 'ยังไม่ส่งตรวจวันนี้';
                     } else {
                         const [year, month] = monthVal.split('-');
                         query = query.gte('check_date', `${year}-${month}-01`).lte('check_date', `${year}-${month}-31`);
-                        if(document.getElementById('dashTitleText')) document.getElementById('dashTitleText').innerText = `ข้อมูลอัปเดตล่าสุดของเดือน ${month}/${year}`;
-                        if(document.getElementById('dashInspectedTitle')) document.getElementById('dashInspectedTitle').innerText = 'รายการรถที่ตรวจสอบแล้วเดือนนี้';
-                        if(document.getElementById('dashMissingTitle')) document.getElementById('dashMissingTitle').innerText = 'ยังไม่ส่งตรวจเดือนนี้';
+                        if (document.getElementById('dashTitleText')) document.getElementById('dashTitleText').innerText = `ข้อมูลอัปเดตล่าสุดของเดือน ${month}/${year}`;
+                        if (document.getElementById('dashInspectedTitle')) document.getElementById('dashInspectedTitle').innerText = 'รายการรถที่ตรวจสอบแล้วเดือนนี้';
+                        if (document.getElementById('dashMissingTitle')) document.getElementById('dashMissingTitle').innerText = 'ยังไม่ส่งตรวจเดือนนี้';
                     }
-                    
+
                     const { data: records, error } = await query.order('created_at', { ascending: false });
                     if (error) throw error;
-                    
+
                     issueBody.innerHTML = ''; missingList.innerHTML = '';
                     let inspectedPlates = [];
                     let platesMap = {};
-                    
+
                     records.forEach(record => {
                         if (!platesMap[record.plate_number]) {
                             platesMap[record.plate_number] = { plate: record.plate_number, carStatus: null, craneStatus: null, inspector: record.inspector_name, checkDate: record.check_date };
                         }
-                        
+
                         let usage = 'พร้อมใช้งาน';
                         if (record.raw_json && record.raw_json.usageCondition) usage = record.raw_json.usageCondition;
                         else if (record.is_defective) usage = 'อยู่ระหว่างเข้าซ่อม';
@@ -943,11 +1477,11 @@
                             if (!platesMap[record.plate_number].carStatus) platesMap[record.plate_number].carStatus = statusData;
                         }
                     });
-                    
+
                     window.dashDataMap = platesMap;
                     Object.values(platesMap).forEach(data => {
                         inspectedPlates.push(data.plate);
-                        
+
                         let getBadge = (statusObj) => {
                             if (!statusObj) return '<span class="text-muted">-</span>';
                             if (statusObj.usageCondition === "ไม่ได้ใช้งาน") {
@@ -961,10 +1495,10 @@
 
                         let carBadge = getBadge(data.carStatus);
                         let craneBadge = getBadge(data.craneStatus);
-                        
+
                         let d = new Date(data.checkDate);
-                        let dateStr = `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth()+1).toString().padStart(2, '0')}/${d.getFullYear()}`;
-                        
+                        let dateStr = `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1).toString().padStart(2, '0')}/${d.getFullYear()}`;
+
                         issueBody.innerHTML += `<tr>
                             <td><div class="fw-bold text-dark d-flex align-items-center gap-2"><i class="ph ph-car text-primary fs-5"></i> ${data.plate}</div></td>
                             <td><div class="text-muted" style="font-size: 14px;">${dateStr}</div></td>
@@ -974,33 +1508,33 @@
                             <td class="text-center"><button class="btn btn-sm btn-outline-primary rounded-pill px-3 py-1" onclick="showDetails('${data.plate}')"><i class="ph ph-magnifying-glass"></i> ดูข้อมูล</button></td>
                         </tr>`;
                     });
-            
+
                     let missingCount = 0;
                     masterCars.forEach(car => {
-                        if(!inspectedPlates.includes(car.plate)) {
+                        if (!inspectedPlates.includes(car.plate)) {
                             missingCount++;
                             missingList.innerHTML += `<div class="dash-item"><div class="d-flex flex-column"><span class="fw-bold text-dark">${car.plate}</span><span class="text-muted" style="font-size: 13px">${car.driver || 'ไม่ระบุคนขับ'}</span></div><span class="badge" style="background: var(--warning-light); color: var(--warning); padding: 6px 10px; border-radius: 6px;">รอตรวจ</span></div>`;
                         }
                     });
-            
+
                     const totalCars = masterCars.length || 1;
                     const inspectedCount = masterCars.length - missingCount;
                     const percent = Math.round((inspectedCount / totalCars) * 100);
                     setProgressRing(percent);
-            
-                    if(issueBody.innerHTML === '') {
+
+                    if (issueBody.innerHTML === '') {
                         issueBody.innerHTML = `<tr><td colspan="6" class="text-center py-5"><h5 class="fw-bold text-dark">ยังไม่มีข้อมูล</h5><p class="text-muted mb-0">ยังไม่มีการบันทึกการตรวจสอบ</p></td></tr>`;
                     }
-                    if(missingList.innerHTML === '') {
+                    if (missingList.innerHTML === '') {
                         missingList.innerHTML = `<div class="text-center py-5"><h5 class="fw-bold text-dark">ตรวจครบ 100%</h5><p class="text-muted mb-0">ยอดเยี่ยมมาก!</p></div>`;
                     }
                 } catch (err) {
                     console.error(err);
                 }
             };
-            
+
             let recentRecords = [];
-            window.loadSummaryData = async function() {
+            window.loadSummaryData = async function () {
                 if (!supabase) return;
                 document.getElementById('recordSelect').innerHTML = '<option value="">-- กำลังดึงข้อมูลล่าสุด... --</option>';
                 try {
@@ -1018,21 +1552,21 @@
                     recentRecords = deduplicatedRecords;
                     deduplicatedRecords.forEach((r, i) => {
                         let d = new Date(r.check_date);
-                        html += `<option value="${i}">🚗 ${r.plate_number} (ตรวจ ${d.getDate()}/${d.getMonth()+1} - ${r.inspector_name})</option>`;
+                        html += `<option value="${i}">🚗 ${r.plate_number} (ตรวจ ${d.getDate()}/${d.getMonth() + 1} - ${r.inspector_name})</option>`;
                     });
                     document.getElementById('recordSelect').innerHTML = html;
                 } catch (err) {
                     console.error(err);
                 }
             };
-            
-            window.generateText = function() {
+
+            window.generateText = function () {
                 const index = document.getElementById('recordSelect').value;
                 if (!index) return document.getElementById('outputText').value = "";
                 const r = recentRecords[index];
                 let d = new Date(r.check_date);
-                let thaiMonths = ["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."];
-                document.getElementById('outputText').value = `วันที่ ${d.getDate()} ${thaiMonths[d.getMonth()]} ${d.getFullYear()+543}
+                let thaiMonths = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
+                document.getElementById('outputText').value = `วันที่ ${d.getDate()} ${thaiMonths[d.getMonth()]} ${d.getFullYear() + 543}
 ผกร.กรย.กฟก.3 ตรวจสอบยานพาหนะ
 ทะเบียน ${r.plate_number} ก่อนออกปฏิบัติงาน 
 เพื่อความปลอดภัย ได้ดำเนินการตรวจสอบ ดังนี้
@@ -1051,17 +1585,17 @@
 โดย ${r.inspector_name}
 (พขร.บ.) ผู้ตรวจสอบ`;
             };
-            
-            window.showDetails = function(plate) {
+
+            window.showDetails = function (plate) {
                 const data = window.dashDataMap[plate];
                 if (!data) return;
-                
+
                 let html = '<div style="text-align: left; font-size: 15px;">';
                 html += '<div><strong>ผู้ตรวจสอบ:</strong> ' + data.inspector + '</div>';
                 let d = new Date(data.checkDate);
-                let dateStr = d.getDate().toString().padStart(2, '0') + '/' + (d.getMonth()+1).toString().padStart(2, '0') + '/' + d.getFullYear();
+                let dateStr = d.getDate().toString().padStart(2, '0') + '/' + (d.getMonth() + 1).toString().padStart(2, '0') + '/' + d.getFullYear();
                 html += '<div><strong>วันที่:</strong> ' + dateStr + '</div><hr/>';
-                
+
                 const renderIssues = (title, statusObj, checklistLabels) => {
                     if (!statusObj) return '';
                     let res = '<h6 class="fw-bold mt-3 text-primary">' + title + '</h6>';
@@ -1072,7 +1606,7 @@
                         for (let i = 1; i <= 30; i++) {
                             if (statusObj.raw['status_' + i] === 'แก้ไข') {
                                 hasDefect = true;
-                                let itemName = checklistLabels[i-1] ? ` (${checklistLabels[i-1]})` : '';
+                                let itemName = checklistLabels[i - 1] ? ` (${checklistLabels[i - 1]})` : '';
                                 listHtml += `<li>ข้อ ${i}${itemName}: ${statusObj.raw['defect_' + i] || 'ไม่ระบุอาการ'}</li>`;
                             }
                         }
@@ -1082,11 +1616,11 @@
                     }
                     return res;
                 };
-                
+
                 html += renderIssues('การตรวจรถยนต์', data.carStatus, vehicleChecklist);
                 html += renderIssues('การตรวจเครนไฮดรอลิค', data.craneStatus, craneChecklist);
                 html += '</div>';
-                
+
                 if (typeof Swal !== 'undefined') {
                     Swal.fire({
                         title: 'รายละเอียด: ' + plate,
@@ -1099,16 +1633,16 @@
                     alert('รายละเอียด: ' + plate + '\\nผู้ตรวจสอบ: ' + data.inspector);
                 }
             };
-            
-            window.copyToClipboard = function() {
+
+            window.copyToClipboard = function () {
                 const txt = document.getElementById("outputText");
-                if(!txt.value) {
+                if (!txt.value) {
                     alert('กรุณาเลือกรถจาก Dropdown ก่อนคัดลอกครับ');
                     return;
                 }
                 txt.select();
                 navigator.clipboard.writeText(txt.value).then(() => {
-                    if(Toast) Toast.fire({ icon: 'success', title: 'คัดลอกสำเร็จ!' });
+                    if (Toast) Toast.fire({ icon: 'success', title: 'คัดลอกสำเร็จ!' });
                     else alert('คัดลอกสำเร็จ!');
                 });
             };
@@ -1117,5 +1651,5 @@
         }
     </script>
 </body>
-</html>
 
+</html>
