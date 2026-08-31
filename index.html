@@ -627,7 +627,10 @@
                 <i class="ph ph-line-logo"></i> สรุปส่งไลน์
             </li>
             <li class="nav-item" onclick="switchView('regulations')">
-                <i class="ph ph-book-open-text"></i> ระเบียบปฏิบัติ
+                <i class="ph ph-book-open-text"></i> ข้อพึงปฏิบัติผู้ขับขี่
+            </li>
+            <li class="nav-item" onclick="switchView('report-print')">
+                <i class="ph ph-printer"></i> โปรแกรมดึงเอกสารการตรวจเช็ครถ
             </li>
         </ul>
     </div>
@@ -1005,6 +1008,44 @@
                             </ul>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <!-- ================= Report Print View ================= -->
+            <div id="report-print" class="view-section">
+                <div class="glass-card mb-4 no-print">
+                    <div class="card-title-modern">
+                        <div class="icon-box primary"><i class="ph ph-printer"></i></div>
+                        <span class="text-primary">ดึงเอกสารการตรวจเช็ครถประจำเดือน</span>
+                    </div>
+                    
+                    <div class="row g-3 align-items-end mt-2">
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold text-dark">ประเภทรถ</label>
+                            <select id="reportCarType" class="form-select" onchange="loadReportPlates()">
+                                <option value="รถยนต์">รถยนต์</option>
+                                <option value="เครนไฮดรอลิค">เครนไฮดรอลิค</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold text-dark">ทะเบียนรถ</label>
+                            <select id="reportPlate" class="form-select">
+                                <option value="">-- เลือกทะเบียน --</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold text-dark">เดือน/ปี</label>
+                            <input type="month" id="reportMonth" class="form-control">
+                        </div>
+                        <div class="col-md-3 d-flex gap-2">
+                            <button class="btn btn-primary flex-grow-1" onclick="generatePrintReport()">ดึงเอกสาร</button>
+                            <button class="btn btn-secondary flex-grow-1" onclick="window.print()"><i class="ph ph-printer"></i> พิมพ์</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="printArea" class="print-area mt-4">
+                    <!-- The generated A4 table will be injected here -->
                 </div>
             </div>
 
@@ -1716,6 +1757,166 @@ ${summaryText}`;
                     if (Toast) Toast.fire({ icon: 'success', title: 'คัดลอกสำเร็จ!' });
                     else alert('คัดลอกสำเร็จ!');
                 });
+            };
+            window.loadReportPlates = function() {
+                const type = document.getElementById('reportCarType').value;
+                const select = document.getElementById('reportPlate');
+                select.innerHTML = '<option value="">-- เลือกทะเบียน --</option>';
+                masterCars.forEach(car => {
+                    if (car.type === type) {
+                        const opt = document.createElement('option');
+                        opt.value = car.plate;
+                        opt.textContent = car.plate;
+                        select.appendChild(opt);
+                    }
+                });
+            };
+
+            // Call loadReportPlates initially
+            setTimeout(loadReportPlates, 1500);
+
+            window.generatePrintReport = async function() {
+                if (!supabase) return alert("รอการเชื่อมต่อฐานข้อมูลสักครู่...");
+                
+                const type = document.getElementById('reportCarType').value;
+                const plate = document.getElementById('reportPlate').value;
+                const monthYear = document.getElementById('reportMonth').value; // format: "YYYY-MM"
+                
+                if (!plate || !monthYear) return alert("กรุณาเลือกทะเบียนและเดือน/ปี");
+
+                const [year, month] = monthYear.split('-');
+                const monthNames = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+                const thaiMonth = monthNames[parseInt(month) - 1];
+                const thaiYear = parseInt(year) + 543;
+
+                // Find car details from masterCars
+                const carDetail = masterCars.find(c => c.plate === plate) || { code: "_______", brand: "_______" };
+
+                // Get all days in month
+                const startOfMonth = `${year}-${month}-01`;
+                const endOfMonth = `${year}-${month}-31`;
+
+                try {
+                    const { data, error } = await supabase.from('inspections')
+                        .select('*')
+                        .eq('plate_number', plate)
+                        .gte('check_date', startOfMonth)
+                        .lte('check_date', endOfMonth)
+                        .order('check_date', { ascending: true });
+                        
+                    if (error) throw error;
+
+                    const daysData = {};
+                    const defectsList = [];
+                    data.forEach(r => {
+                        const d = parseInt(r.check_date.split('-')[2]);
+                        daysData[d] = r.raw_json;
+                        
+                        // Collect defects
+                        if (r.is_defective) {
+                            defectsList.push({
+                                date: `${d} ${thaiMonth} ${thaiYear}`,
+                                inspector: r.inspector_name,
+                                issues: r.issues_list
+                            });
+                        }
+                    });
+
+                    const checklist = type === 'รถยนต์' ? vehicleChecklist : craneChecklist;
+                    const title = type === 'รถยนต์' ? 'แบบฟอร์มการตรวจยานพาหนะก่อนปฏิบัติงานประจำวัน' : 'แบบฟอร์มการตรวจเครนไฮดรอลิคก่อนปฏิบัติงานประจำวัน';
+
+                    let tableHTML = `
+                        <div class="print-header">
+                            <h4>${title}</h4>
+                            <p style="text-align: left; margin-top: 10px; font-size: 14px;">
+                                หน่วยงาน: <u>ผกร.กรย.(ก3)</u> &nbsp;&nbsp;
+                                เลขทะเบียน: <u>${plate}</u> &nbsp;&nbsp;
+                                รหัส: <u>${carDetail.code}</u> &nbsp;&nbsp;
+                                ยี่ห้อรถ/รุ่น: <u>${carDetail.brand}</u> &nbsp;&nbsp;
+                                เดือน <u>${thaiMonth}</u> พ.ศ. <u>${thaiYear}</u>
+                            </p>
+                            <p style="text-align: left; font-size: 12px; margin-bottom: 5px;">
+                                ใช้เครื่องหมายถูก (✔) สำหรับทุกรายการที่อยู่ในสภาพดี ใช้เครื่องหมายผิด (✘) สำหรับรายการที่ต้องการซ่อมแซม ใช้เครื่องหมาย ( - ) ในช่องที่ไม่เกี่ยวข้อง
+                            </p>
+                        </div>
+                        <table class="print-table">
+                            <thead>
+                                <tr>
+                                    <th rowspan="2" style="width: 25%;">รายการ</th>
+                                    <th colspan="31">วันที่</th>
+                                    <th rowspan="2" style="width: 10%;">ข้อคิดเห็น</th>
+                                </tr>
+                                <tr>
+                                    ${Array.from({length: 31}, (_, i) => `<th style="width: 2%;">${i + 1}</th>`).join('')}
+                                </tr>
+                            </thead>
+                            <tbody>
+                    `;
+
+                    checklist.forEach((item, index) => {
+                        let rowHTML = `<tr><td class="text-start">${index + 1}. ${item}</td>`;
+                        for (let d = 1; d <= 31; d++) {
+                            let mark = '';
+                            if (daysData[d]) {
+                                const status = daysData[d][`status_${index + 1}`];
+                                if (status === 'ปกติ') mark = '✔';
+                                else if (status === 'ผิดปกติ') mark = '✘';
+                                else mark = '-';
+                            }
+                            rowHTML += `<td>${mark}</td>`;
+                        }
+                        rowHTML += `<td></td></tr>`;
+                        tableHTML += rowHTML;
+                    });
+
+                    tableHTML += `
+                            </tbody>
+                        </table>
+                        
+                        <div style="margin-top: 15px; display: flex; justify-content: space-between;">
+                            <table class="print-table" style="width: 60%;">
+                                <thead>
+                                    <tr>
+                                        <th>ข้อบกพร่อง</th>
+                                        <th>วันที่แจ้ง</th>
+                                        <th>ผู้ควบคุมยาน</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                    `;
+                    
+                    if (defectsList.length > 0) {
+                        defectsList.forEach(def => {
+                            tableHTML += `<tr><td class="text-start">${def.issues}</td><td>${def.date}</td><td>${def.inspector}</td></tr>`;
+                        });
+                    } else {
+                        tableHTML += `<tr><td>&nbsp;</td><td></td><td></td></tr>
+                                      <tr><td>&nbsp;</td><td></td><td></td></tr>`;
+                    }
+                    
+                    tableHTML += `
+                                </tbody>
+                            </table>
+                            
+                            <div style="width: 35%; text-align: center; border: 1px solid #000; padding: 10px;">
+                                <p style="margin-bottom: 30px;">ลงชื่อผู้ควบคุมยาน :</p>
+                                <p>(........................................................)</p>
+                                <p>ตำแหน่ง................................................</p>
+                            </div>
+                        </div>
+                        <div style="margin-top: 15px; text-align: left;">
+                            <p style="font-size: 10px;">ลงชื่อผู้นำไปใช้งาน/ทำการตรวจสอบ</p>
+                        </div>
+                    `;
+
+                    document.getElementById('printArea').innerHTML = tableHTML;
+                    
+                    if(Toast) Toast.fire({ icon: 'success', title: 'ดึงข้อมูลสำเร็จ! กดปุ่ม "พิมพ์" ได้เลย' });
+
+                } catch (err) {
+                    console.error(err);
+                    alert("Error: " + err.message);
+                }
             };
         } catch (globalErr) {
             alert("Global Error: " + globalErr.message);
