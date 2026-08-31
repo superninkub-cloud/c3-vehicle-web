@@ -1244,6 +1244,7 @@
                     }
 
                     populateDropdowns();
+                    if (window.loadReportPlates) window.loadReportPlates();
                     loadDashboard();
                 } catch (error) {
                     console.error(error);
@@ -1759,21 +1760,17 @@ ${summaryText}`;
                 });
             };
             window.loadReportPlates = function() {
-                const type = document.getElementById('reportCarType').value;
                 const select = document.getElementById('reportPlate');
                 select.innerHTML = '<option value="">-- เลือกทะเบียน --</option>';
                 masterCars.forEach(car => {
-                    if (car.type === type) {
-                        const opt = document.createElement('option');
-                        opt.value = car.plate;
-                        opt.textContent = car.plate;
-                        select.appendChild(opt);
-                    }
+                    const opt = document.createElement('option');
+                    opt.value = car.plate;
+                    opt.textContent = car.plate;
+                    select.appendChild(opt);
                 });
             };
 
-            // Call loadReportPlates initially
-            setTimeout(loadReportPlates, 1500);
+            // Call loadReportPlates is now handled by fetchMasterData
 
             window.generatePrintReport = async function() {
                 if (!supabase) return alert("รอการเชื่อมต่อฐานข้อมูลสักครู่...");
