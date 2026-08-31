@@ -1823,37 +1823,90 @@ ${summaryText}`;
                     const title = type === 'รถยนต์' ? 'แบบฟอร์มการตรวจยานพาหนะก่อนปฏิบัติงานประจำวัน' : 'แบบฟอร์มการตรวจเครนไฮดรอลิคก่อนปฏิบัติงานประจำวัน';
 
                     let tableHTML = `
-                        <div class="print-header">
-                            <h4>${title}</h4>
-                            <p style="text-align: left; margin-top: 10px; font-size: 14px;">
-                                หน่วยงาน: <u>ผกร.กรย.(ก3)</u> &nbsp;&nbsp;
-                                เลขทะเบียน: <u>${plate}</u> &nbsp;&nbsp;
-                                รหัส: <u>${carDetail.code}</u> &nbsp;&nbsp;
-                                ยี่ห้อรถ/รุ่น: <u>${carDetail.brand}</u> &nbsp;&nbsp;
-                                เดือน <u>${thaiMonth}</u> พ.ศ. <u>${thaiYear}</u>
-                            </p>
-                            <p style="text-align: left; font-size: 12px; margin-bottom: 5px;">
-                                ใช้เครื่องหมายถูก (✔) สำหรับทุกรายการที่อยู่ในสภาพดี ใช้เครื่องหมายผิด (✘) สำหรับรายการที่ต้องการซ่อมแซม ใช้เครื่องหมาย ( - ) ในช่องที่ไม่เกี่ยวข้อง
-                            </p>
-                        </div>
-                        <table class="print-table">
-                            <thead>
-                                <tr>
-                                    <th rowspan="2" style="width: 25%;">รายการ</th>
-                                    <th colspan="31">วันที่</th>
-                                    <th rowspan="2" style="width: 10%;">ข้อคิดเห็น</th>
-                                </tr>
-                                <tr>
-                                    ${Array.from({length: 31}, (_, i) => `<th style="width: 2%;">${i + 1}</th>`).join('')}
-                                </tr>
-                            </thead>
-                            <tbody>
+                        <style>
+                            @media print {
+                                body { background: white !important; font-family: 'Sarabun', 'Segoe UI', sans-serif !important; font-size: 11px !important; color: #000 !important; }
+                                .sidebar, .topbar, .no-print { display: none !important; }
+                                .main-content { margin: 0; padding: 0; width: 100%; height: auto; overflow: visible; display: block; }
+                                .content-area { padding: 0 !important; overflow: visible !important; display: block; }
+                                .print-area { width: 100%; margin: 0; padding: 0; display: block; }
+                                
+                                .print-container { padding: 0 5px; }
+                                .print-header-section { display: flex; align-items: flex-start; margin-bottom: 10px; position: relative; }
+                                .print-logo { width: 50px; height: 50px; position: absolute; left: 0; top: 0; }
+                                .print-title { flex: 1; text-align: center; }
+                                .print-title h4 { margin: 0 0 10px 0; font-size: 16px; font-weight: bold; }
+                                
+                                .print-info-line { display: flex; justify-content: center; gap: 15px; font-size: 13px; margin-bottom: 5px; flex-wrap: wrap; }
+                                .print-info-line span { display: inline-flex; align-items: flex-end; }
+                                .print-info-line .dot-line { border-bottom: 1px dotted #000; min-width: 80px; display: inline-block; text-align: center; padding: 0 5px; font-weight: bold; }
+                                
+                                .print-desc { font-size: 12px; margin-bottom: 5px; text-align: center; }
+                                
+                                .print-table { width: 100%; border-collapse: collapse; border: 2px solid #000; page-break-inside: avoid; margin-bottom: 10px; }
+                                .print-table th, .print-table td { border: 1px solid #000; padding: 2px 2px; text-align: center; font-size: 11px; height: 18px; }
+                                .print-table th { font-weight: bold; background-color: transparent !important; }
+                                .print-table .text-start { text-align: left !important; padding-left: 5px; }
+                                .print-table .col-day { width: 2.2%; font-size: 10px; }
+                                .print-table .col-item { width: 22%; }
+                                .print-table .col-remark { width: 8%; }
+                                
+                                .print-footer-section { display: flex; justify-content: space-between; page-break-inside: avoid; margin-top: 5px; }
+                                .print-defect-table { width: 60%; border-collapse: collapse; border: 1px solid #000; }
+                                .print-defect-table th, .print-defect-table td { border: 1px solid #000; padding: 4px; text-align: center; font-size: 11px; height: 25px; }
+                                .print-defect-table .text-start { text-align: left !important; padding-left: 5px; }
+                                
+                                .print-signature-box { width: 35%; border: 1px solid #000; padding: 15px 10px; text-align: center; display: flex; flex-direction: column; justify-content: center; }
+                                .print-signature-box p { margin: 10px 0; font-size: 12px; }
+                                .print-footer-note { font-size: 12px; margin-top: 2px; text-align: left; }
+                                
+                                @page { size: A4 landscape; margin: 10mm; }
+                            }
+                        </style>
+                        <div class="print-container">
+                            <div class="print-header-section">
+                                <svg class="print-logo" viewBox="0 0 100 100">
+                                    <circle cx="50" cy="45" r="40" fill="none" stroke="#15803d" stroke-width="5"/>
+                                    <circle cx="50" cy="45" r="30" fill="#15803d"/>
+                                    <rect x="42" y="20" width="16" height="50" fill="white"/>
+                                    <rect x="25" y="37" width="50" height="16" fill="white"/>
+                                    <text x="50" y="95" font-size="12" text-anchor="middle" fill="#15803d" font-weight="bold">SAFETY PEA</text>
+                                </svg>
+                                <div class="print-title">
+                                    <h4>${title}</h4>
+                                    <div class="print-info-line">
+                                        <span>หน่วยงาน: <span class="dot-line">ผกร.กรย.(ก3)</span></span>
+                                        <span>เลขทะเบียน: <span class="dot-line">${plate}</span></span>
+                                        <span>รหัส: <span class="dot-line">${carDetail.code || '________________'}</span></span>
+                                        <span>ยี่ห้อรถ/รุ่น: <span class="dot-line">${carDetail.brand || '________________'}</span></span>
+                                        <span>เดือน: <span class="dot-line">${thaiMonth}</span></span>
+                                        <span>พ.ศ.: <span class="dot-line">${thaiYear}</span></span>
+                                    </div>
+                                    <div class="print-desc">
+                                        ใช้เครื่องหมายถูก (✔) สำหรับทุกรายการที่อยู่ในสภาพดี ใช้เครื่องหมายผิด (✘) สำหรับรายการที่ต้องการซ่อมแซม ใช้เครื่องหมาย ( - ) ในช่องที่ไม่เกี่ยวข้อง
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <table class="print-table">
+                                <thead>
+                                    <tr>
+                                        <th rowspan="2" style="width: 3%;">ที่</th>
+                                        <th rowspan="2" class="col-item">การตรวจสอบยานพาหนะ<br>รายการ</th>
+                                        <th colspan="31">วันที่</th>
+                                        <th rowspan="2" class="col-remark">ข้อคิดเห็น</th>
+                                    </tr>
+                                    <tr>
+                                        ${Array.from({length: 31}, (_, i) => `<th class="col-day">${i + 1}</th>`).join('')}
+                                    </tr>
+                                </thead>
+                                <tbody>
                     `;
 
                     checklist.forEach((item, index) => {
-                        let rowHTML = `<tr><td class="text-start">${index + 1}. ${item}</td>`;
+                        let rowHTML = `<tr><td>${index + 1}</td><td class="text-start">${item}</td>`;
                         for (let d = 1; d <= 31; d++) {
-                            let mark = '';
+                            let mark = ' ';
                             if (daysData[d]) {
                                 const status = daysData[d][`status_${index + 1}`];
                                 if (status === 'ปกติ') mark = '✔';
@@ -1866,43 +1919,52 @@ ${summaryText}`;
                         tableHTML += rowHTML;
                     });
 
+                    // Add empty row for signature at bottom of table
                     tableHTML += `
-                            </tbody>
-                        </table>
-                        
-                        <div style="margin-top: 15px; display: flex; justify-content: space-between;">
-                            <table class="print-table" style="width: 60%;">
-                                <thead>
                                     <tr>
-                                        <th>ข้อบกพร่อง</th>
-                                        <th>วันที่แจ้ง</th>
-                                        <th>ผู้ควบคุมยาน</th>
+                                        <td colspan="2" class="text-start">ลงชื่อผู้นำไปใช้งาน/ทำการตรวจสอบ</td>
+                                        ${Array.from({length: 31}, () => `<td></td>`).join('')}
+                                        <td></td>
                                     </tr>
-                                </thead>
-                                <tbody>
+                                </tbody>
+                            </table>
+                            
+                            <div class="print-footer-section">
+                                <table class="print-defect-table">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 50%;">ข้อบกพร่อง</th>
+                                            <th style="width: 20%;">วันที่แจ้ง</th>
+                                            <th style="width: 30%;">ผู้ควบคุมยาน</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
                     `;
                     
                     if (defectsList.length > 0) {
                         defectsList.forEach(def => {
                             tableHTML += `<tr><td class="text-start">${def.issues}</td><td>${def.date}</td><td>${def.inspector}</td></tr>`;
                         });
+                        // Fill remaining rows if less than 3
+                        for (let i = defectsList.length; i < 3; i++) {
+                            tableHTML += `<tr><td>&nbsp;</td><td></td><td></td></tr>`;
+                        }
                     } else {
                         tableHTML += `<tr><td>&nbsp;</td><td></td><td></td></tr>
+                                      <tr><td>&nbsp;</td><td></td><td></td></tr>
                                       <tr><td>&nbsp;</td><td></td><td></td></tr>`;
                     }
                     
                     tableHTML += `
-                                </tbody>
-                            </table>
-                            
-                            <div style="width: 35%; text-align: center; border: 1px solid #000; padding: 10px;">
-                                <p style="margin-bottom: 30px;">ลงชื่อผู้ควบคุมยาน :</p>
-                                <p>(........................................................)</p>
-                                <p>ตำแหน่ง................................................</p>
+                                    </tbody>
+                                </table>
+                                
+                                <div class="print-signature-box">
+                                    <p style="margin-bottom: 25px;">ลงชื่อผู้ควบคุมยาน :</p>
+                                    <p>(........................................................)</p>
+                                    <p>ตำแหน่ง................................................</p>
+                                </div>
                             </div>
-                        </div>
-                        <div style="margin-top: 15px; text-align: left;">
-                            <p style="font-size: 10px;">ลงชื่อผู้นำไปใช้งาน/ทำการตรวจสอบ</p>
                         </div>
                     `;
 
