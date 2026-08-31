@@ -658,7 +658,7 @@
             <div style="height: 24px;"></div> <!-- Spacer -->
 
             <!-- Connection Status -->
-            <div id="dbStatusBadge" class="mb-3 d-flex align-items-center gap-2"
+            <div id="dbStatusBadge" class="mb-3 d-flex align-items-center gap-2 no-print"
                 style="font-size: 14px; color: var(--text-muted); background: white; padding: 6px 12px; border-radius: 50px; display: inline-flex; border: 1px solid var(--border);">
                 <div style="width: 10px; height: 10px; border-radius: 50%; background: var(--danger);"
                     id="statusIndicator"></div>
@@ -1945,14 +1945,12 @@ ${summaryText}`;
                         defectsList.forEach(def => {
                             tableHTML += `<tr><td class="text-start">${def.issues}</td><td>${def.date}</td><td>${def.inspector}</td></tr>`;
                         });
-                        // Fill remaining rows if less than 3
-                        for (let i = defectsList.length; i < 3; i++) {
+                        // Fill remaining rows if less than 1
+                        for (let i = defectsList.length; i < 1; i++) {
                             tableHTML += `<tr><td>&nbsp;</td><td></td><td></td></tr>`;
                         }
                     } else {
-                        tableHTML += `<tr><td>&nbsp;</td><td></td><td></td></tr>
-                                      <tr><td>&nbsp;</td><td></td><td></td></tr>
-                                      <tr><td>&nbsp;</td><td></td><td></td></tr>`;
+                        tableHTML += `<tr><td>&nbsp;</td><td></td><td></td></tr>`;
                     }
                     
                     tableHTML += `
