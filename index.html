@@ -2246,10 +2246,6 @@ ${summaryText}`;
                     alert("Error: " + err.message);
                 }
             };
-        } catch (globalErr) {
-            alert("Global Error: " + globalErr.message);
-        }
-
         // ==================== ADMIN PANEL ====================
         const ADMIN_USER = '504540';
         const ADMIN_PASS = 'Cha16072534';
@@ -2258,9 +2254,9 @@ ${summaryText}`;
             return sessionStorage.getItem('c3_admin_auth') === 'true';
         }
 
-        function handleAdminAccess() {
+        window.handleAdminAccess = function() {
             if (isAdminLoggedIn()) {
-                switchView('admin-panel');
+                window.switchView('admin-panel');
                 return;
             }
             Swal.fire({
@@ -2297,13 +2293,13 @@ ${summaryText}`;
                         timer: 1500,
                         showConfirmButton: false
                     }).then(() => {
-                        switchView('admin-panel');
+                        window.switchView('admin-panel');
                     });
                 }
             });
-        }
+        };
 
-        function adminLogout() {
+        window.adminLogout = function() {
             Swal.fire({
                 icon: 'question',
                 title: 'ออกจากระบบ Admin?',
@@ -2314,13 +2310,13 @@ ${summaryText}`;
             }).then((result) => {
                 if (result.isConfirmed) {
                     sessionStorage.removeItem('c3_admin_auth');
-                    switchView('dashboard');
+                    window.switchView('dashboard');
                     Toast.fire({ icon: 'info', title: 'ออกจากระบบ Admin แล้ว' });
                 }
             });
-        }
+        };
 
-        async function loadAdminData() {
+        window.loadAdminData = async function() {
             if (!supabase) {
                 document.getElementById('adminTableBody').innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--danger);">ยังไม่ได้เชื่อมต่อฐานข้อมูล</td></tr>';
                 return;
@@ -2363,8 +2359,8 @@ ${summaryText}`;
                         <td data-label="สถานะ"><span class="badge-type ${statusBadge}">${statusText}</span></td>
                         <td data-label="จัดการ">
                             <div style="display:flex;gap:6px;flex-wrap:wrap;">
-                                <button class="btn-action btn-edit" onclick="editInspection('${row.id}')"><i class="ph ph-pencil-simple"></i> แก้ไข</button>
-                                <button class="btn-action btn-delete" onclick="deleteInspection('${row.id}')"><i class="ph ph-trash"></i> ลบ</button>
+                                <button class="btn-action btn-edit" onclick="window.editInspection('${row.id}')"><i class="ph ph-pencil-simple"></i> แก้ไข</button>
+                                <button class="btn-action btn-delete" onclick="window.deleteInspection('${row.id}')"><i class="ph ph-trash"></i> ลบ</button>
                             </div>
                         </td>
                     </tr>`;
@@ -2374,16 +2370,16 @@ ${summaryText}`;
                 console.error(err);
                 document.getElementById('adminTableBody').innerHTML = `<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--danger);">เกิดข้อผิดพลาด: ${err.message}</td></tr>`;
             }
-        }
+        };
 
-        function clearAdminFilters() {
+        window.clearAdminFilters = function() {
             document.getElementById('adminFilterDate').value = '';
             document.getElementById('adminFilterType').value = '';
             document.getElementById('adminFilterPlate').value = '';
-            loadAdminData();
-        }
+            window.loadAdminData();
+        };
 
-        async function deleteInspection(id) {
+        window.deleteInspection = async function(id) {
             const result = await Swal.fire({
                 icon: 'warning',
                 title: 'ยืนยันการลบ?',
@@ -2398,13 +2394,13 @@ ${summaryText}`;
                 const { error } = await supabase.from('inspections').delete().eq('id', id);
                 if (error) throw error;
                 Toast.fire({ icon: 'success', title: 'ลบข้อมูลสำเร็จ' });
-                loadAdminData();
+                window.loadAdminData();
             } catch (err) {
                 Swal.fire({ icon: 'error', title: 'เกิดข้อผิดพลาด', text: err.message });
             }
-        }
+        };
 
-        async function editInspection(id) {
+        window.editInspection = async function(id) {
             try {
                 const { data, error } = await supabase.from('inspections').select('*').eq('id', id).single();
                 if (error) throw error;
@@ -2452,10 +2448,14 @@ ${summaryText}`;
                 if (updateError) throw updateError;
 
                 Toast.fire({ icon: 'success', title: 'แก้ไขข้อมูลสำเร็จ' });
-                loadAdminData();
+                window.loadAdminData();
             } catch (err) {
                 Swal.fire({ icon: 'error', title: 'เกิดข้อผิดพลาด', text: err.message });
             }
+        };
+
+        } catch (globalErr) {
+            alert("Global Error: " + globalErr.message);
         }
     </script>
 </body>
