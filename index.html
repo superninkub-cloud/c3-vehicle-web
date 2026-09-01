@@ -263,6 +263,201 @@
             color: var(--primary);
         }
 
+        .badge-warning {
+            background-color: var(--warning-light);
+            color: #92400e;
+            border: 1px solid #fbbf24;
+        }
+
+        /* Admin Panel Styles */
+        .admin-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        .admin-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 16px;
+            background: linear-gradient(135deg, #7c3aed, #a78bfa);
+            color: white;
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+        }
+        .admin-badge i { font-size: 16px; }
+        .btn-admin-logout {
+            padding: 8px 20px;
+            background: var(--danger-light);
+            color: var(--danger);
+            border: 1px solid var(--danger);
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+        }
+        .btn-admin-logout:hover {
+            background: var(--danger);
+            color: white;
+        }
+        .admin-filters {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        .admin-filters .form-control,
+        .admin-filters .form-select {
+            max-width: 200px;
+            font-size: 14px;
+            padding: 10px 14px;
+        }
+        .admin-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 14px;
+        }
+        .admin-table thead th {
+            background: var(--bg-body);
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-muted);
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+        .admin-table tbody td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+        }
+        .admin-table tbody tr:hover {
+            background-color: #f0f4ff;
+        }
+        .admin-table .badge-type {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .admin-table .badge-car {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+        .admin-table .badge-crane {
+            background: var(--warning-light);
+            color: #92400e;
+        }
+        .admin-table .badge-ok {
+            background: var(--success-light);
+            color: #065f46;
+        }
+        .admin-table .badge-defect {
+            background: var(--danger-light);
+            color: #991b1b;
+        }
+        .btn-action {
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .btn-action i { font-size: 14px; }
+        .btn-edit {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+        .btn-edit:hover {
+            background: var(--primary);
+            color: white;
+        }
+        .btn-delete {
+            background: var(--danger-light);
+            color: var(--danger);
+        }
+        .btn-delete:hover {
+            background: var(--danger);
+            color: white;
+        }
+        .admin-table-wrap {
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+        .admin-stats {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+        .admin-stat-card {
+            flex: 1;
+            min-width: 140px;
+            padding: 16px 20px;
+            border-radius: 14px;
+            background: white;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+        .admin-stat-card .stat-num {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        .admin-stat-card .stat-label {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+        @media (max-width: 992px) {
+            .admin-filters .form-control,
+            .admin-filters .form-select {
+                max-width: 100%;
+                flex: 1;
+            }
+            .admin-table thead { display: none; }
+            .admin-table tbody td {
+                display: block;
+                border: none;
+                padding: 8px 16px;
+            }
+            .admin-table tbody td::before {
+                content: attr(data-label);
+                font-weight: 600;
+                color: var(--text-muted);
+                display: block;
+                font-size: 12px;
+                margin-bottom: 4px;
+            }
+            .admin-table tbody tr {
+                display: block;
+                border: 1px solid var(--border);
+                border-radius: 12px;
+                margin-bottom: 12px;
+                background: white;
+                padding: 8px 0;
+            }
+        }
+
         .icon-box.warning {
             background: var(--warning-light);
             color: var(--warning);
@@ -631,6 +826,9 @@
             </li>
             <li class="nav-item" onclick="switchView('report-print')">
                 <i class="ph ph-printer"></i> โปรแกรมดึงเอกสารการตรวจเช็ครถ
+            </li>
+            <li class="nav-item" onclick="handleAdminAccess()" style="margin-top: 16px; border-top: 1px solid rgba(0,0,0,0.08); padding-top: 20px;">
+                <i class="ph ph-shield-star"></i> ระบบ Admin
             </li>
         </ul>
     </div>
@@ -1049,6 +1247,76 @@
                 </div>
             </div>
 
+            <!-- ================= Admin Panel View ================= -->
+            <div id="admin-panel" class="view-section">
+                <div class="glass-card">
+                    <div class="admin-header">
+                        <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
+                            <div class="card-title-modern" style="margin-bottom:0;">
+                                <div class="icon-box" style="background:linear-gradient(135deg,#7c3aed,#a78bfa);color:white;">
+                                    <i class="ph ph-shield-star"></i>
+                                </div>
+                                <span>จัดการข้อมูลการตรวจสอบ</span>
+                            </div>
+                            <div class="admin-badge"><i class="ph ph-user-circle"></i> Admin</div>
+                        </div>
+                        <button class="btn-admin-logout" onclick="adminLogout()">
+                            <i class="ph ph-sign-out"></i> ออกจากระบบ Admin
+                        </button>
+                    </div>
+
+                    <!-- Admin Stats -->
+                    <div class="admin-stats" id="adminStats">
+                        <div class="admin-stat-card">
+                            <div class="stat-num" id="adminTotalCount">0</div>
+                            <div class="stat-label">รายการทั้งหมด</div>
+                        </div>
+                        <div class="admin-stat-card">
+                            <div class="stat-num" id="adminOkCount" style="color:var(--success);">0</div>
+                            <div class="stat-label">ปกติ</div>
+                        </div>
+                        <div class="admin-stat-card">
+                            <div class="stat-num" id="adminDefectCount" style="color:var(--danger);">0</div>
+                            <div class="stat-label">มีข้อบกพร่อง</div>
+                        </div>
+                    </div>
+
+                    <!-- Filters -->
+                    <div class="admin-filters">
+                        <input type="date" id="adminFilterDate" class="form-control" placeholder="กรองวันที่" onchange="loadAdminData()">
+                        <select id="adminFilterType" class="form-select" onchange="loadAdminData()">
+                            <option value="">ทุกประเภท</option>
+                            <option value="รถยนต์">รถยนต์</option>
+                            <option value="เครนไฮดรอลิค">เครนไฮดรอลิค</option>
+                        </select>
+                        <input type="text" id="adminFilterPlate" class="form-control" placeholder="ค้นหาทะเบียน..." oninput="loadAdminData()">
+                        <button class="btn btn-outline-secondary" onclick="clearAdminFilters()" style="border-radius:10px;">
+                            <i class="ph ph-x"></i> ล้างตัวกรอง
+                        </button>
+                    </div>
+
+                    <!-- Data Table -->
+                    <div class="admin-table-wrap">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>วันที่</th>
+                                    <th>ทะเบียน</th>
+                                    <th>ประเภท</th>
+                                    <th>ผู้ตรวจ</th>
+                                    <th>สถานะ</th>
+                                    <th>จัดการ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminTableBody">
+                                <tr><td colspan="7" style="text-align:center;padding:40px;color:var(--text-muted);">กำลังโหลดข้อมูล...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -1329,12 +1597,15 @@
                         'crane-form': 'ตรวจเครนไฮดรอลิค',
                         'summary': 'สรุปส่งไลน์',
                         'regulations': 'ระเบียบปฏิบัติ พ.ศ. 2565',
-                        'settings': 'ตั้งค่าระบบ'
+                        'settings': 'ตั้งค่าระบบ',
+                        'admin-panel': 'ระบบ Admin',
+                        'report-print': 'ดึงเอกสารการตรวจเช็ครถ'
                     };
-                    document.getElementById('pageTitle').innerText = titleMap[viewId];
+                    document.getElementById('pageTitle').innerText = titleMap[viewId] || viewId;
 
                     if (window.innerWidth <= 992) toggleSidebar();
                     if (viewId === 'summary') loadSummaryData();
+                    if (viewId === 'admin-panel') loadAdminData();
                     if (viewId === 'dashboard') {
                         if (supabase) loadDashboard();
                         else loadDashboardOffline();
@@ -1977,6 +2248,214 @@ ${summaryText}`;
             };
         } catch (globalErr) {
             alert("Global Error: " + globalErr.message);
+        }
+
+        // ==================== ADMIN PANEL ====================
+        const ADMIN_USER = '504540';
+        const ADMIN_PASS = 'Cha16072534';
+
+        function isAdminLoggedIn() {
+            return sessionStorage.getItem('c3_admin_auth') === 'true';
+        }
+
+        function handleAdminAccess() {
+            if (isAdminLoggedIn()) {
+                switchView('admin-panel');
+                return;
+            }
+            Swal.fire({
+                title: '<i class="ph ph-shield-star" style="color:#7c3aed;font-size:32px;"></i><br>เข้าสู่ระบบ Admin',
+                html: `
+                    <div style="text-align:left;margin-top:12px;">
+                        <label style="font-size:14px;font-weight:600;color:#64748b;">รหัสผู้ใช้</label>
+                        <input id="swal-user" class="swal2-input" placeholder="กรอกรหัสผู้ใช้" style="margin-top:4px;">
+                        <label style="font-size:14px;font-weight:600;color:#64748b;margin-top:12px;display:block;">รหัสผ่าน</label>
+                        <input id="swal-pass" type="password" class="swal2-input" placeholder="กรอกรหัสผ่าน" style="margin-top:4px;">
+                    </div>
+                `,
+                showCancelButton: true,
+                confirmButtonText: '<i class="ph ph-sign-in"></i> เข้าสู่ระบบ',
+                cancelButtonText: 'ยกเลิก',
+                confirmButtonColor: '#7c3aed',
+                focusConfirm: false,
+                preConfirm: () => {
+                    const user = document.getElementById('swal-user').value.trim();
+                    const pass = document.getElementById('swal-pass').value;
+                    if (user !== ADMIN_USER || pass !== ADMIN_PASS) {
+                        Swal.showValidationMessage('รหัสผู้ใช้หรือรหัสผ่านไม่ถูกต้อง');
+                        return false;
+                    }
+                    return true;
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    sessionStorage.setItem('c3_admin_auth', 'true');
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'เข้าสู่ระบบสำเร็จ!',
+                        text: 'ยินดีต้อนรับ Admin',
+                        timer: 1500,
+                        showConfirmButton: false
+                    }).then(() => {
+                        switchView('admin-panel');
+                    });
+                }
+            });
+        }
+
+        function adminLogout() {
+            Swal.fire({
+                icon: 'question',
+                title: 'ออกจากระบบ Admin?',
+                showCancelButton: true,
+                confirmButtonText: 'ออกจากระบบ',
+                cancelButtonText: 'ยกเลิก',
+                confirmButtonColor: '#ef4444'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    sessionStorage.removeItem('c3_admin_auth');
+                    switchView('dashboard');
+                    Toast.fire({ icon: 'info', title: 'ออกจากระบบ Admin แล้ว' });
+                }
+            });
+        }
+
+        async function loadAdminData() {
+            if (!supabase) {
+                document.getElementById('adminTableBody').innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--danger);">ยังไม่ได้เชื่อมต่อฐานข้อมูล</td></tr>';
+                return;
+            }
+            try {
+                let query = supabase.from('inspections').select('*').order('check_date', { ascending: false }).order('created_at', { ascending: false });
+
+                const filterDate = document.getElementById('adminFilterDate').value;
+                const filterType = document.getElementById('adminFilterType').value;
+                const filterPlate = document.getElementById('adminFilterPlate').value.trim();
+
+                if (filterDate) query = query.eq('check_date', filterDate);
+                if (filterType) query = query.eq('car_type', filterType);
+                if (filterPlate) query = query.ilike('plate_number', `%${filterPlate}%`);
+
+                const { data, error } = await query;
+                if (error) throw error;
+
+                // Update stats
+                document.getElementById('adminTotalCount').textContent = data.length;
+                document.getElementById('adminOkCount').textContent = data.filter(r => !r.is_defective).length;
+                document.getElementById('adminDefectCount').textContent = data.filter(r => r.is_defective).length;
+
+                if (data.length === 0) {
+                    document.getElementById('adminTableBody').innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--text-muted);"><i class="ph ph-empty" style="font-size:32px;"></i><br>ไม่พบข้อมูล</td></tr>';
+                    return;
+                }
+
+                let html = '';
+                data.forEach((row, i) => {
+                    const typeBadge = row.car_type === 'รถยนต์' ? 'badge-car' : 'badge-crane';
+                    const statusBadge = row.is_defective ? 'badge-defect' : 'badge-ok';
+                    const statusText = row.is_defective ? 'มีข้อบกพร่อง' : 'ปกติ';
+                    html += `<tr>
+                        <td data-label="#">${i + 1}</td>
+                        <td data-label="วันที่">${row.check_date}</td>
+                        <td data-label="ทะเบียน" style="font-weight:600;">${row.plate_number}</td>
+                        <td data-label="ประเภท"><span class="badge-type ${typeBadge}">${row.car_type}</span></td>
+                        <td data-label="ผู้ตรวจ">${row.inspector_name}</td>
+                        <td data-label="สถานะ"><span class="badge-type ${statusBadge}">${statusText}</span></td>
+                        <td data-label="จัดการ">
+                            <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                                <button class="btn-action btn-edit" onclick="editInspection('${row.id}')"><i class="ph ph-pencil-simple"></i> แก้ไข</button>
+                                <button class="btn-action btn-delete" onclick="deleteInspection('${row.id}')"><i class="ph ph-trash"></i> ลบ</button>
+                            </div>
+                        </td>
+                    </tr>`;
+                });
+                document.getElementById('adminTableBody').innerHTML = html;
+            } catch (err) {
+                console.error(err);
+                document.getElementById('adminTableBody').innerHTML = `<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--danger);">เกิดข้อผิดพลาด: ${err.message}</td></tr>`;
+            }
+        }
+
+        function clearAdminFilters() {
+            document.getElementById('adminFilterDate').value = '';
+            document.getElementById('adminFilterType').value = '';
+            document.getElementById('adminFilterPlate').value = '';
+            loadAdminData();
+        }
+
+        async function deleteInspection(id) {
+            const result = await Swal.fire({
+                icon: 'warning',
+                title: 'ยืนยันการลบ?',
+                text: 'ข้อมูลที่ลบจะไม่สามารถกู้คืนได้',
+                showCancelButton: true,
+                confirmButtonText: '<i class="ph ph-trash"></i> ลบข้อมูล',
+                cancelButtonText: 'ยกเลิก',
+                confirmButtonColor: '#ef4444'
+            });
+            if (!result.isConfirmed) return;
+            try {
+                const { error } = await supabase.from('inspections').delete().eq('id', id);
+                if (error) throw error;
+                Toast.fire({ icon: 'success', title: 'ลบข้อมูลสำเร็จ' });
+                loadAdminData();
+            } catch (err) {
+                Swal.fire({ icon: 'error', title: 'เกิดข้อผิดพลาด', text: err.message });
+            }
+        }
+
+        async function editInspection(id) {
+            try {
+                const { data, error } = await supabase.from('inspections').select('*').eq('id', id).single();
+                if (error) throw error;
+
+                const issuesText = data.issues_list || 'ไม่มี';
+
+                const { value: formValues } = await Swal.fire({
+                    title: '<i class="ph ph-pencil-simple" style="color:#2563eb;"></i> แก้ไขข้อมูล',
+                    html: `
+                        <div style="text-align:left;font-size:14px;">
+                            <label style="font-weight:600;color:#64748b;">วันที่ตรวจ</label>
+                            <input id="edit-date" type="date" class="swal2-input" value="${data.check_date}" style="margin-top:4px;">
+                            <label style="font-weight:600;color:#64748b;margin-top:12px;display:block;">ทะเบียนรถ</label>
+                            <input id="edit-plate" class="swal2-input" value="${data.plate_number}" style="margin-top:4px;">
+                            <label style="font-weight:600;color:#64748b;margin-top:12px;display:block;">ผู้ตรวจ</label>
+                            <input id="edit-inspector" class="swal2-input" value="${data.inspector_name}" style="margin-top:4px;">
+                            <label style="font-weight:600;color:#64748b;margin-top:12px;display:block;">สถานะ</label>
+                            <select id="edit-status" class="swal2-select" style="margin-top:4px;width:100%;padding:10px;border:1px solid #d1d5db;border-radius:8px;">
+                                <option value="false" ${!data.is_defective ? 'selected' : ''}>ปกติ</option>
+                                <option value="true" ${data.is_defective ? 'selected' : ''}>มีข้อบกพร่อง</option>
+                            </select>
+                            <label style="font-weight:600;color:#64748b;margin-top:12px;display:block;">ข้อบกพร่อง</label>
+                            <textarea id="edit-issues" class="swal2-textarea" style="margin-top:4px;min-height:80px;">${issuesText}</textarea>
+                        </div>
+                    `,
+                    showCancelButton: true,
+                    confirmButtonText: '<i class="ph ph-floppy-disk"></i> บันทึก',
+                    cancelButtonText: 'ยกเลิก',
+                    confirmButtonColor: '#2563eb',
+                    width: '500px',
+                    preConfirm: () => {
+                        return {
+                            check_date: document.getElementById('edit-date').value,
+                            plate_number: document.getElementById('edit-plate').value.trim(),
+                            inspector_name: document.getElementById('edit-inspector').value.trim(),
+                            is_defective: document.getElementById('edit-status').value === 'true',
+                            issues_list: document.getElementById('edit-issues').value.trim() || null
+                        };
+                    }
+                });
+
+                if (!formValues) return;
+
+                const { error: updateError } = await supabase.from('inspections').update(formValues).eq('id', id);
+                if (updateError) throw updateError;
+
+                Toast.fire({ icon: 'success', title: 'แก้ไขข้อมูลสำเร็จ' });
+                loadAdminData();
+            } catch (err) {
+                Swal.fire({ icon: 'error', title: 'เกิดข้อผิดพลาด', text: err.message });
+            }
         }
     </script>
 </body>
