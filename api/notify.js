@@ -5,6 +5,11 @@
 
   const { plate_number, inspector_name, is_defective, issues_list, car_type, summary_text } = req.body;
   const channelToken = process.env.LINE_CHANNEL_ACCESS_TOKEN;
+  const targetId = process.env.LINE_TARGET_ID;
+
+  if (!targetId) {
+    return res.status(500).json({ message: "Missing LINE_TARGET_ID in environment variables" });
+  }
 
   if (!channelToken) {
     return res.status(500).json({ message: 'Missing LINE token in environment variables' });
@@ -20,13 +25,14 @@
   if (summary_text) { message += summary_text; }
 
   try {
-    const response = await fetch("https://api.line.me/v2/bot/message/broadcast", {
+    const response = await fetch("https://api.line.me/v2/bot/message/push", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "Authorization": "Bearer " + channelToken
       },
       body: JSON.stringify({
+        to: targetId,
         messages: [{ type: "text", text: message }]
       })
     });
